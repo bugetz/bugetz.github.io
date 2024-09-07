@@ -1,1 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2c2c2c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #444;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            background-color: #777;
+            transform: scale(1.05);
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #666;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+        }
+        .message {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .score-board {
+            margin: 20px 0;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Guess the Number Game</h1>
+        <div class="score-board">
+            <p>Difficulty: 
+                <select id="difficultySelect" class="btn">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </p>
+            <p>Score: <span id="score">0</span></p>
+            <p>Time Left: <span id="timer">60</span> seconds</p>
+        </div>
+        <p class="message" id="message">Guess a number between 1 and 100</p>
+        <input type="number" id="guessInput" placeholder="Enter your guess" />
+        <button class="btn" onclick="submitGuess()">Submit Guess</button>
+        <button class="btn" onclick="startNewGame()">Start New Game</button>
+    </div>
+
+    <footer>
+        <p>Created with ❤️ by ChatGPT</p>
+    </footer>
+
+    <script>
+        let targetNumber, maxNumber, score, timer, timerInterval;
+        const easyRange = 100;
+        const mediumRange = 500;
+        const hardRange = 1000;
+
+        function setDifficulty() {
+            const difficulty = document.getElementById('difficultySelect').value;
+            switch (difficulty) {
+                case 'easy':
+                    maxNumber = easyRange;
+                    break;
+                case 'medium':
+                    maxNumber = mediumRange;
+                    break;
+                case 'hard':
+                    maxNumber = hardRange;
+                    break;
+            }
+            startNewGame();
+        }
+
+        function startNewGame() {
+            score = 0;
+            document.getElementById('score').textContent = score;
+            const difficulty = document.getElementById('difficultySelect').value;
+            setDifficulty();
+            targetNumber = Math.floor(Math.random() * maxNumber) + 1;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('message').textContent = `Guess a number between 1 and ${maxNumber}`;
+            resetTimer();
+        }
+
+        function submitGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            if (isNaN(guess) || guess < 1 || guess > maxNumber) {
+                document.getElementById('message').textContent = `Please enter a valid number between 1 and ${maxNumber}.`;
+                return;
+            }
+
+            if (guess === targetNumber) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+                document.getElementById('message').textContent = `Correct! The number was ${targetNumber}.`;
+                startNewGame();
+            } else if (guess < targetNumber) {
+                document.getElementById('message').textContent = 'Too low! Try again.';
+            } else {
+                document.getElementById('message').textContent = 'Too high! Try again.';
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timer = 60;
+            document.getElementById('timer').textContent = timer;
+            timerInterval = setInterval(() => {
+                timer--;
+                document.getElementById('timer').textContent = timer;
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('message').textContent = `Time's up! The number was ${targetNumber}.`;
+                    startNewGame();
+                }
+            }, 1000);
+        }
+
+        document.getElementById('difficultySelect').addEventListener('change', setDifficulty);
+        startNewGame();
+    </script>
+</body>
+</html>
 
