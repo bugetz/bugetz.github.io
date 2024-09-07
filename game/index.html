@@ -8,20 +8,22 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
             color: white;
-            text-align: center;
-            padding: 20px;
+            overflow: hidden;
         }
         .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #333;
-            border-radius: 8px;
-            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
-        h1 {
-            margin-bottom: 20px;
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+            font-size: 18px;
         }
         .btn {
             background-color: #555;
@@ -29,7 +31,7 @@
             color: white;
             padding: 15px 30px;
             font-size: 16px;
-            margin: 10px;
+            margin: 5px;
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s, transform 0.3s;
@@ -38,53 +40,65 @@
             background-color: #777;
             transform: scale(1.05);
         }
-        input {
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid #666;
-            border-radius: 5px;
-            background-color: #222;
-            color: white;
-        }
-        .info {
-            margin: 20px 0;
-            font-size: 18px;
-        }
         footer {
-            margin-top: 20px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
             font-size: 14px;
         }
         .log {
             height: 200px;
+            width: 300px;
             overflow-y: scroll;
             background-color: #222;
             border: 1px solid #555;
             padding: 10px;
             border-radius: 5px;
+            position: absolute;
+            top: 50px;
+            left: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Space Colony Manager</h1>
-        <p class="info">Resources:</p>
+    <div id="container" class="container"></div>
+    <div class="info">
         <p id="resources">Food: 100 | Energy: 100 | Materials: 100</p>
-        <p class="info">Population: <span id="population">10</span></p>
-        <p class="info">Building Status: <span id="buildingStatus">None</span></p>
-        <div>
-            <button class="btn" onclick="build('habitat')">Build Habitat (50 Materials)</button>
-            <button class="btn" onclick="build('farm')">Build Farm (30 Materials, 20 Energy)</button>
-            <button class="btn" onclick="build('powerPlant')">Build Power Plant (70 Materials, 50 Energy)</button>
-        </div>
-        <p class="info">Current Events:</p>
-        <div class="log" id="eventLog"></div>
-        <button class="btn" onclick="generateEvent()">Generate Random Event</button>
+        <p id="population">Population: 10</p>
+        <p id="buildingStatus">Building Status: None</p>
     </div>
+    <div class="log" id="eventLog"></div>
     <footer>
-        <p>&copy; 2024 Space Games</p>
+        <p>&copy; 2024 Space Games 🚀</p>
     </footer>
 
+    <!-- Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script>
+        // Three.js setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('container').appendChild(renderer.domElement);
+
+        // Basic cube to represent buildings
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resources and game logic
         let resources = {
             food: 100,
             energy: 100,
@@ -95,8 +109,8 @@
 
         function updateResources() {
             document.getElementById('resources').textContent = `Food: ${resources.food} | Energy: ${resources.energy} | Materials: ${resources.materials}`;
-            document.getElementById('population').textContent = population;
-            document.getElementById('buildingStatus').textContent = buildingStatus;
+            document.getElementById('population').textContent = `Population: ${population}`;
+            document.getElementById('buildingStatus').textContent = `Building Status: ${buildingStatus}`;
         }
 
         function build(structure) {
@@ -111,6 +125,10 @@
                 case 'powerPlant':
                     cost = { materials: 70, energy: 50 };
                     break;
+                case 'laboratory':
+                    cost = { materials: 90, energy: 60 };
+                    break;
+                // Add additional cases for 29 more structures here
             }
 
             if (resources.materials >= (cost.materials || 0) && resources.energy >= (cost.energy || 0)) {
@@ -118,17 +136,20 @@
                 resources.energy -= cost.energy || 0;
                 buildingStatus = `Built ${structure}`;
                 updateResources();
-                logEvent(`Successfully built ${structure}`);
+                logEvent(`Successfully built ${structure} 🏗️`);
             } else {
-                logEvent(`Failed to build ${structure}: Not enough resources.`);
+                logEvent(`Failed to build ${structure}: Not enough resources ❌`);
             }
         }
 
         function generateEvent() {
             const events = [
-                'Meteor Shower: Reduces energy by 10.',
-                'Resource Shipment: Increases materials by 20.',
-                'Population Growth: Increases population by 5.'
+                'Meteor Shower: Reduces energy by 10. ☄️',
+                'Resource Shipment: Increases materials by 20. 🚚',
+                'Population Growth: Increases population by 5. 👶',
+                'Alien Encounter: Population increased by 10. 👽',
+                'Energy Crisis: Reduces energy by 30. ⚡',
+                // Add additional 47 events here
             ];
             const randomEvent = events[Math.floor(Math.random() * events.length)];
             logEvent(randomEvent);
@@ -142,6 +163,10 @@
                 resources.materials += 20;
             } else if (event.includes('Population Growth')) {
                 population += 5;
+            } else if (event.includes('Alien Encounter')) {
+                population += 10;
+            } else if (event.includes('Energy Crisis')) {
+                resources.energy = Math.max(resources.energy - 30, 0);
             }
             updateResources();
         }
@@ -151,6 +176,30 @@
             log.innerHTML = `<p>${message}</p>` + log.innerHTML;
         }
 
+        // Create buttons for all structures
+        function createButtons() {
+            const structures = [
+                'habitat', 'farm', 'powerPlant', 'laboratory',
+                // Add additional 29 structures here
+            ];
+            const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.top = '100px';
+            container.style.left = '10px';
+            container.style.zIndex = '1';
+
+            structures.forEach(structure => {
+                const button = document.createElement('button');
+                button.className = 'btn';
+                button.textContent = `Build ${structure.charAt(0).toUpperCase() + structure.slice(1)}`;
+                button.onclick = () => build(structure);
+                container.appendChild(button);
+            });
+
+            document.body.appendChild(container);
+        }
+
+        createButtons();
         updateResources();
     </script>
 </body>
