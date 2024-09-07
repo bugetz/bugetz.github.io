@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Handle to URL Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Handle to URL Converter</h1>
+    <input type="text" id="handleInput" placeholder="Enter YouTube @handle">
+    <button onclick="convertHandle()">Convert</button>
+    <div id="result" class="result"></div>
+
+    <script>
+        function convertHandle() {
+            const handle = document.getElementById('handleInput').value;
+            const resultDiv = document.getElementById('result');
+
+            if (handle.startsWith('@')) {
+                const channelId = handle.substring(1);
+                const url = `https://www.youtube.com/channel/${channelId}`;
+                resultDiv.innerHTML = `Channel URL: <a href="${url}" target="_blank">${url}</a>`;
+            } else {
+                resultDiv.innerHTML = 'Please enter a valid YouTube @handle.';
+            }
+        }
+    </script>
+</body>
+</html>
 
