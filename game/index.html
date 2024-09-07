@@ -3,204 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Colony Manager</title>
+    <title>3D Blue Cube</title>
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            color: white;
             overflow: hidden;
+            background: #000; /* Black background for better contrast */
         }
-        .container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1;
-            font-size: 18px;
-        }
-        .btn {
-            background-color: #555;
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            font-size: 16px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .btn:hover {
-            background-color: #777;
-            transform: scale(1.05);
-        }
-        footer {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 14px;
-        }
-        .log {
-            height: 200px;
-            width: 300px;
-            overflow-y: scroll;
-            background-color: #222;
-            border: 1px solid #555;
-            padding: 10px;
-            border-radius: 5px;
-            position: absolute;
-            top: 50px;
-            left: 10px;
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div id="container" class="container"></div>
-    <div class="info">
-        <p id="resources">Food: 100 | Energy: 100 | Materials: 100</p>
-        <p id="population">Population: 10</p>
-        <p id="buildingStatus">Building Status: None</p>
-    </div>
-    <div class="log" id="eventLog"></div>
-    <footer>
-        <p>&copy; 2024 Space Games 🚀</p>
-    </footer>
-
-    <!-- Three.js library -->
+    <!-- Include Three.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <script>
-        // Three.js setup
+        // Create scene
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('container').appendChild(renderer.domElement);
 
-        // Basic cube to represent buildings
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
+        // Create camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 5;
 
+        // Create renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create a blue cube
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshStandardMaterial({ color: 0x0000ff, roughness: 0.5, metalness: 0.5 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        // Add a light source
+        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        // Create orbit controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = true;
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Render loop
         function animate() {
             requestAnimationFrame(animate);
+
+            // Rotate the cube
             cube.rotation.x += 0.01;
             cube.rotation.y += 0.01;
+
+            controls.update();
             renderer.render(scene, camera);
         }
+
         animate();
-
-        // Resources and game logic
-        let resources = {
-            food: 100,
-            energy: 100,
-            materials: 100
-        };
-        let population = 10;
-        let buildingStatus = 'None';
-
-        function updateResources() {
-            document.getElementById('resources').textContent = `Food: ${resources.food} | Energy: ${resources.energy} | Materials: ${resources.materials}`;
-            document.getElementById('population').textContent = `Population: ${population}`;
-            document.getElementById('buildingStatus').textContent = `Building Status: ${buildingStatus}`;
-        }
-
-        function build(structure) {
-            let cost = {};
-            switch (structure) {
-                case 'habitat':
-                    cost = { materials: 50 };
-                    break;
-                case 'farm':
-                    cost = { materials: 30, energy: 20 };
-                    break;
-                case 'powerPlant':
-                    cost = { materials: 70, energy: 50 };
-                    break;
-                case 'laboratory':
-                    cost = { materials: 90, energy: 60 };
-                    break;
-                // Add additional cases for 29 more structures here
-            }
-
-            if (resources.materials >= (cost.materials || 0) && resources.energy >= (cost.energy || 0)) {
-                resources.materials -= cost.materials || 0;
-                resources.energy -= cost.energy || 0;
-                buildingStatus = `Built ${structure}`;
-                updateResources();
-                logEvent(`Successfully built ${structure} 🏗️`);
-            } else {
-                logEvent(`Failed to build ${structure}: Not enough resources ❌`);
-            }
-        }
-
-        function generateEvent() {
-            const events = [
-                'Meteor Shower: Reduces energy by 10. ☄️',
-                'Resource Shipment: Increases materials by 20. 🚚',
-                'Population Growth: Increases population by 5. 👶',
-                'Alien Encounter: Population increased by 10. 👽',
-                'Energy Crisis: Reduces energy by 30. ⚡',
-                // Add additional 47 events here
-            ];
-            const randomEvent = events[Math.floor(Math.random() * events.length)];
-            logEvent(randomEvent);
-            handleEvent(randomEvent);
-        }
-
-        function handleEvent(event) {
-            if (event.includes('Meteor Shower')) {
-                resources.energy = Math.max(resources.energy - 10, 0);
-            } else if (event.includes('Resource Shipment')) {
-                resources.materials += 20;
-            } else if (event.includes('Population Growth')) {
-                population += 5;
-            } else if (event.includes('Alien Encounter')) {
-                population += 10;
-            } else if (event.includes('Energy Crisis')) {
-                resources.energy = Math.max(resources.energy - 30, 0);
-            }
-            updateResources();
-        }
-
-        function logEvent(message) {
-            const log = document.getElementById('eventLog');
-            log.innerHTML = `<p>${message}</p>` + log.innerHTML;
-        }
-
-        // Create buttons for all structures
-        function createButtons() {
-            const structures = [
-                'habitat', 'farm', 'powerPlant', 'laboratory',
-                // Add additional 29 structures here
-            ];
-            const container = document.createElement('div');
-            container.style.position = 'absolute';
-            container.style.top = '100px';
-            container.style.left = '10px';
-            container.style.zIndex = '1';
-
-            structures.forEach(structure => {
-                const button = document.createElement('button');
-                button.className = 'btn';
-                button.textContent = `Build ${structure.charAt(0).toUpperCase() + structure.slice(1)}`;
-                button.onclick = () => build(structure);
-                container.appendChild(button);
-            });
-
-            document.body.appendChild(container);
-        }
-
-        createButtons();
-        updateResources();
     </script>
 </body>
 </html>
+
