@@ -3,33 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Links</title>
+    <title>My Tools</title>
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background: linear-gradient(135deg, #000000, #434343);
+            color: white;
             text-align: center;
+            padding: 20px;
         }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007BFF;
+        .btn {
+            background-color: #555;
             border: none;
-            border-radius: 5px;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
             text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        .button:hover {
-            background-color: #0056b3;
+        .btn:hover {
+            background-color: #777;
+            transform: scale(1.1);
+        }
+        footer {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Button Links</h1>
-    <a href="https://www.youtube.com/toqqie" class="button" target="_blank">Go to YouTube</a>
-    <a href="https://chatgpt.com" class="button" target="_blank">Go to ChatGPT</a>
-    <a href="https://www.discord.com" class="button" class="button" target="_blank">Go to Roblox</a>
+    <h1>Welcome to My Tools</h1>
+    <div>
+        <a href="https://example.com" class="btn">My Tools</a>
+    </div>
+    <footer>
+        <p>Created by ChatGPT - <a href="https://www.openai.com" style="color: white;">OpenAI</a></p>
+    </footer>
 </body>
 </html>
