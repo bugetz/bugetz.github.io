@@ -37,7 +37,6 @@
             color: white;
             padding: 10px;
             margin: 10px auto;
-            width: 300px;
             border-radius: 5px;
             box-sizing: border-box;
         }
@@ -45,7 +44,9 @@
             width: calc(100% - 22px);
         }
         .result {
+            width: calc(100% - 22px);
             word-wrap: break-word;
+            overflow: hidden; /* To handle overflow content gracefully */
         }
     </style>
 </head>
@@ -88,3 +89,4 @@
     </script>
 </body>
 </html>
+
