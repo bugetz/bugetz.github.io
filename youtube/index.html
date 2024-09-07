@@ -52,7 +52,7 @@
 </head>
 <body>
     <h1>YouTube Handle to URL Converter</h1>
-    <input type="text" id="handleInput" placeholder="Enter YouTube @handle">
+    <input type="text" id="handleInput" placeholder="Enter YouTube handle">
     <button class="btn" onclick="convertHandle()">Convert</button>
     <div id="result" class="result"></div>
 
@@ -63,8 +63,8 @@
             const handle = document.getElementById('handleInput').value;
             const resultDiv = document.getElementById('result');
 
-            if (handle.startsWith('@')) {
-                const username = handle.substring(1);
+            if (handle) {
+                const username = handle;
                 const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=${username}&key=${apiKey}`;
 
                 fetch(url)
@@ -75,7 +75,7 @@
                             const channelUrl = `https://www.youtube.com/channel/${channelId}`;
                             resultDiv.innerHTML = `Channel URL: <a href="${channelUrl}" target="_blank" style="color: #1e90ff;">${channelUrl}</a>`;
                         } else {
-                            resultDiv.innerHTML = 'Handle not found. Please check the @handle and try again.';
+                            resultDiv.innerHTML = 'Handle not found. Please check the handle and try again.';
                         }
                     })
                     .catch(error => {
@@ -83,10 +83,9 @@
                         console.error('Error:', error);
                     });
             } else {
-                resultDiv.innerHTML = 'Please enter a valid YouTube @handle.';
+                resultDiv.innerHTML = 'Please enter a YouTube handle.';
             }
         }
     </script>
 </body>
 </html>
-
