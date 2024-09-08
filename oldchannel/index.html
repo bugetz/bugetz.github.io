@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>YouTube Channel Info Checker</title>
+    <style>
+        body {
+            background-color: #121212; /* Dark background */
+            color: #f1f1f1; /* Light text */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input {
+            background-color: #1c1c1c;
+            border: 1px solid #444;
+            padding: 12px 16px;
+            width: 350px;
+            border-radius: 4px;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3a3a3a;
+            color: #ffffff;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .output {
+            margin-top: 30px;
+            background-color: #1c1c1c;
+            padding: 20px;
+            border-radius: 5px;
+            width: 350px;
+            text-align: left;
+        }
+
+        .output p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #888;
+            text-align: center;
+        }
+
+        @media only screen and (max-width: 768px) {
+            input, .output {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>YouTube Channel Info Checker</h1>
+
+    <input type="text" id="channelURL" placeholder="Enter YouTube Channel URL (e.g., youtube.com/toqqie)">
+    <button onclick="getChannelInfo()">Get Channel Info</button>
+
+    <div class="output" id="output">
+        <p>Enter a YouTube channel URL to retrieve the details.</p>
+    </div>
+
+    <div class="footer">
+        <p>Powered by YouTube Data API v3 | Dark Theme</p>
+    </div>
+
+    <script>
+        const apiKey = 'AIzaSyCl3JWE4cYB9N4pydibdJoN6eNE1vJbCkw';  // Your provided API key
+
+        async function getChannelInfo() {
+            const channelURL = document.getElementById('channelURL').value;
+            const username = channelURL.split('/').pop();
+            const output = document.getElementById('output');
+
+            if (!username) {
+                output.innerHTML = `<p style="color: #ff4040;">Please enter a valid YouTube channel URL.</p>`;
+                return;
+            }
+
+            output.innerHTML = `<p style="color: #ffff00;">Fetching channel information...</p>`;
+
+            try {
+                // Fetch Channel details (creation date, banner, etc.)
+                let channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,brandingSettings&forUsername=${username}&key=${apiKey}`);
+                let channelData = await channelResponse.json();
+
+                if (channelData.items && channelData.items.length > 0) {
+                    let channel = channelData.items[0];
+                    let creationDate = new Date(channel.snippet.publishedAt).toLocaleDateString();
+                    let bannerUrl = channel.brandingSettings.image && channel.brandingSettings.image.bannerExternalUrl ? channel.brandingSettings.image.bannerExternalUrl : null;
+                    let hasBanner = bannerUrl ? 'Yes' : 'No';
+
+                    // Fetch playlist details (last playlist created)
+                    let playlistsResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channel.id}&maxResults=1&key=${apiKey}`);
+                    let playlistsData = await playlistsResponse.json();
+                    let lastPlaylist = playlistsData.items && playlistsData.items.length > 0 ? new Date(playlistsData.items[0].snippet.publishedAt).toLocaleDateString() : 'No playlists found';
+
+                    // Fetch last video details
+                    let uploadsPlaylistId = channel.contentDetails.relatedPlaylists.uploads;
+                    let lastVideoResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=1&key=${apiKey}`);
+                    let lastVideoData = await lastVideoResponse.json();
+                    let lastVideo = lastVideoData.items && lastVideoData.items.length > 0 ? new Date(lastVideoData.items[0].snippet.publishedAt).toLocaleDateString() : 'No videos found';
+
+                    // Displaying data with better styling
+                    output.innerHTML = `
+                        <p><strong>Channel Name:</strong> ${channel.snippet.title}</p>
+                        <p><strong>Channel Creation Date:</strong> ${creationDate}</p>
+                        <p><strong>Has Banner:</strong> ${hasBanner}</p>
+                        ${hasBanner === 'Yes' ? `<p><strong>Banner URL:</strong> <a href="${bannerUrl}" target="_blank" style="color: #00ff00;">View Banner</a></p>` : ''}
+                        <p><strong>Last Playlist Created:</strong> ${lastPlaylist}</p>
+                        <p><strong>Last Video Posted:</strong> ${lastVideo}</p>
+                    `;
+                } else {
+                    output.innerHTML = `<p style="color: #ff4040;">Channel not found. Please check the URL and try again.</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                output.innerHTML = `<p style="color: #ff4040;">Error fetching channel information. Please try again later.</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
