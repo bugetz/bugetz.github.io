@@ -107,6 +107,11 @@
             color: #00ff00;
             font-weight: bold;
         }
+
+        .not-available-for-claiming {
+            color: #ff4040;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -190,6 +195,9 @@
                         
                         if (creationBeforeMay2009 && lastActivityBefore2011) {
                             output.innerHTML = `<p class="available-for-claiming">Channel is available for claiming</p>`;
+                            return;
+                        } else {
+                            output.innerHTML = `<p class="not-available-for-claiming">Channel is not available for claiming</p>`;
                             return;
                         }
                     }
