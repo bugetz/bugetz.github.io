@@ -7,8 +7,8 @@
     <title>YouTube Channel Info Checker</title>
     <style>
         body {
-            background-color: #121212; /* Dark background */
-            color: #f1f1f1; /* Light text */
+            background-color: #121212;
+            color: #f1f1f1;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -51,6 +51,22 @@
             background-color: #555;
         }
 
+        .claiming-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .claiming-button.active {
+            background-color: #008000;
+            color: #ffffff;
+        }
+
         .output {
             margin-top: 30px;
             background-color: #1c1c1c;
@@ -86,6 +102,11 @@
                 width: 100%;
             }
         }
+
+        .available-for-claiming {
+            color: #00ff00;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -99,12 +120,34 @@
         <p>Enter a YouTube channel URL to retrieve the details.</p>
     </div>
 
+    <button class="claiming-button" id="claimingModeButton" onclick="toggleClaimingMode()">Claiming Mode</button>
+
     <div class="footer">
         <p>Powered by YouTube Data API v3 | Dark Theme</p>
     </div>
 
     <script>
         const apiKey = 'AIzaSyCl3JWE4cYB9N4pydibdJoN6eNE1vJbCkw';  // Your provided API key
+        let claimingMode = false;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                getChannelInfo();
+            }
+            if (event.key === 'D' && event.shiftKey) {
+                clearInput();
+            }
+        });
+
+        function toggleClaimingMode() {
+            const button = document.getElementById('claimingModeButton');
+            claimingMode = !claimingMode;
+            button.classList.toggle('active', claimingMode);
+        }
+
+        function clearInput() {
+            document.getElementById('channelURL').value = '';
+        }
 
         async function getChannelInfo() {
             const channelURL = document.getElementById('channelURL').value;
@@ -129,7 +172,7 @@
                     let bannerUrl = channel.brandingSettings.image && channel.brandingSettings.image.bannerExternalUrl ? channel.brandingSettings.image.bannerExternalUrl : null;
                     let hasBanner = bannerUrl ? 'Yes' : 'No';
 
-                    // Fetch playlist details (last playlist created)
+                    // Fetch last playlist creation date
                     let playlistsResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channel.id}&maxResults=1&key=${apiKey}`);
                     let playlistsData = await playlistsResponse.json();
                     let lastPlaylist = playlistsData.items && playlistsData.items.length > 0 ? new Date(playlistsData.items[0].snippet.publishedAt).toLocaleDateString() : 'No playlists found';
@@ -140,7 +183,18 @@
                     let lastVideoData = await lastVideoResponse.json();
                     let lastVideo = lastVideoData.items && lastVideoData.items.length > 0 ? new Date(lastVideoData.items[0].snippet.publishedAt).toLocaleDateString() : 'No videos found';
 
-                    // Displaying data with better styling
+                    // Claiming Mode check
+                    if (claimingMode) {
+                        const creationBeforeMay2009 = new Date(channel.snippet.publishedAt) < new Date('2009-05-01');
+                        const lastActivityBefore2011 = new Date(lastVideo) < new Date('2011-01-01');
+                        
+                        if (creationBeforeMay2009 && lastActivityBefore2011) {
+                            output.innerHTML = `<p class="available-for-claiming">Channel is available for claiming</p>`;
+                            return;
+                        }
+                    }
+
+                    // Displaying regular data
                     output.innerHTML = `
                         <p><strong>Channel Name:</strong> ${channel.snippet.title}</p>
                         <p><strong>Channel Creation Date:</strong> ${creationDate}</p>
