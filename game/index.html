@@ -1,77 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Blue Cube</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #000; /* Black background for better contrast */
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video B-roll Assistant</title>
+  <style>
+    body {
+      background-color: #181818;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #video-container {
+      width: 80%;
+      max-width: 800px;
+      position: relative;
+    }
+
+    #video {
+      width: 100%;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+
+    #timeline {
+      margin-top: 10px;
+      width: 100%;
+      height: 5px;
+      background-color: #444;
+      position: relative;
+    }
+
+    .highlight {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background-color: yellow;
+      opacity: 0.5;
+    }
+
+    .highlight:hover {
+      opacity: 0.8;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      top: -30px;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .highlight:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #upload-area {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <!-- Include Three.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // Create scene
-        const scene = new THREE.Scene();
 
-        // Create camera
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
+  <h1>Video B-roll Assistant</h1>
 
-        // Create renderer
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+  <div id="video-container">
+    <video id="video" controls></video>
+    <div id="timeline"></div>
+  </div>
 
-        // Create a blue cube
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshStandardMaterial({ color: 0x0000ff, roughness: 0.5, metalness: 0.5 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
+  <div id="upload-area">
+    <input type="file" id="videoFile" accept="video/*">
+  </div>
 
-        // Add a light source
-        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-        scene.add(ambientLight);
+  <script>
+    const video = document.getElementById('video');
+    const videoFileInput = document.getElementById('videoFile');
+    const timeline = document.getElementById('timeline');
 
-        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-        pointLight.position.set(10, 10, 10);
-        scene.add(pointLight);
+    // Example B-roll sections (in seconds) and tooltip text
+    const bRollSections = [
+      { start: 10, end: 20, tooltip: "Use nature B-roll here" },
+      { start: 30, end: 40, tooltip: "Insert city B-roll" },
+      { start: 50, end: 60, tooltip: "Add crowd footage" }
+    ];
 
-        // Create orbit controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.enableZoom = true;
+    // Load the video from file input
+    videoFileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const fileURL = URL.createObjectURL(file);
+      video.src = fileURL;
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+      video.addEventListener('loadedmetadata', function() {
+        // Set the timeline width based on the video duration
+        const videoDuration = video.duration;
+        bRollSections.forEach(section => {
+          addHighlightToTimeline(section.start, section.end, section.tooltip, videoDuration);
         });
+      });
+    });
 
-        // Render loop
-        function animate() {
-            requestAnimationFrame(animate);
+    function addHighlightToTimeline(start, end, tooltip, videoDuration) {
+      const highlightDiv = document.createElement('div');
+      const startPercentage = (start / videoDuration) * 100;
+      const endPercentage = (end / videoDuration) * 100;
+      const widthPercentage = endPercentage - startPercentage;
 
-            // Rotate the cube
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
+      highlightDiv.classList.add('highlight');
+      highlightDiv.style.left = startPercentage + '%';
+      highlightDiv.style.width = widthPercentage + '%';
 
-            controls.update();
-            renderer.render(scene, camera);
-        }
+      const tooltipDiv = document.createElement('div');
+      tooltipDiv.classList.add('tooltip');
+      tooltipDiv.textContent = tooltip;
+      highlightDiv.appendChild(tooltipDiv);
 
-        animate();
-    </script>
+      timeline.appendChild(highlightDiv);
+    }
+  </script>
+
 </body>
 </html>
-
