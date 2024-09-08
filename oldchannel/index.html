@@ -82,6 +82,12 @@
             line-height: 1.5;
         }
 
+        .output img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
         .footer {
             margin-top: 40px;
             font-size: 0.9rem;
@@ -175,6 +181,7 @@
                     let channel = channelData.items[0];
                     let creationDate = new Date(channel.snippet.publishedAt).toLocaleDateString();
                     let bannerUrl = channel.brandingSettings.image && channel.brandingSettings.image.bannerExternalUrl ? channel.brandingSettings.image.bannerExternalUrl : null;
+                    let profilePictureUrl = channel.snippet.thumbnails.high.url;
                     let hasBanner = bannerUrl ? 'Yes' : 'No';
 
                     // Fetch last playlist creation date
@@ -208,6 +215,8 @@
                         <p><strong>Channel Creation Date:</strong> ${creationDate}</p>
                         <p><strong>Has Banner:</strong> ${hasBanner}</p>
                         ${hasBanner === 'Yes' ? `<p><strong>Banner URL:</strong> <a href="${bannerUrl}" target="_blank" style="color: #00ff00;">View Banner</a></p>` : ''}
+                        <p><strong>Profile Picture:</strong></p>
+                        <img src="${profilePictureUrl}" alt="Profile Picture">
                         <p><strong>Last Playlist Created:</strong> ${lastPlaylist}</p>
                         <p><strong>Last Video Posted:</strong> ${lastVideo}</p>
                     `;
