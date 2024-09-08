@@ -88,6 +88,23 @@
             margin-top: 10px;
         }
 
+        .open-pfp-button {
+            background-color: #555;
+            color: #ffffff;
+            padding: 8px 16px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+        }
+
+        .open-pfp-button:hover {
+            background-color: #777;
+        }
+
         .footer {
             margin-top: 40px;
             font-size: 0.9rem;
@@ -216,7 +233,8 @@
                         <p><strong>Has Banner:</strong> ${hasBanner}</p>
                         ${hasBanner === 'Yes' ? `<p><strong>Banner URL:</strong> <a href="${bannerUrl}" target="_blank" style="color: #00ff00;">View Banner</a></p>` : ''}
                         <p><strong>Profile Picture:</strong></p>
-                        <img src="${profilePictureUrl}" alt="Profile Picture">
+                        <img src="${profilePictureUrl}" alt="Profile Picture" style="max-width: 100px;">
+                        <button class="open-pfp-button" onclick="window.open('${profilePictureUrl}', '_blank')">Open Profile Picture</button>
                         <p><strong>Last Playlist Created:</strong> ${lastPlaylist}</p>
                         <p><strong>Last Video Posted:</strong> ${lastVideo}</p>
                     `;
