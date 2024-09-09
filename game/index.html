@@ -13,8 +13,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
       margin: 0;
+      padding: 20px;
     }
 
     h1 {
@@ -40,6 +40,7 @@
       height: 5px;
       background-color: #444;
       position: relative;
+      border-radius: 5px;
     }
 
     .highlight {
@@ -47,16 +48,14 @@
       top: 0;
       height: 100%;
       background-color: yellow;
-      opacity: 0.5;
-    }
-
-    .highlight:hover {
-      opacity: 0.8;
+      opacity: 0.7;
+      pointer-events: all;
+      border-radius: 2px;
     }
 
     .tooltip {
       visibility: hidden;
-      width: 150px;
+      width: 180px;
       background-color: black;
       color: #fff;
       text-align: center;
@@ -64,9 +63,9 @@
       padding: 5px;
       position: absolute;
       z-index: 1;
-      top: -30px;
+      top: -35px;
       left: 50%;
-      margin-left: -75px;
+      transform: translateX(-50%);
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -116,7 +115,7 @@
 
   <div id="upload-area">
     <input type="file" id="videoFile" accept="video/*">
-    <button id="addBrollButton">Add More B-roll Ideas</button>
+    <button id="addBrollButton">Generate B-roll Suggestions</button>
   </div>
 
   <script>
@@ -124,13 +123,6 @@
     const videoFileInput = document.getElementById('videoFile');
     const timeline = document.getElementById('timeline');
     const addBrollButton = document.getElementById('addBrollButton');
-
-    // Example B-roll sections (in seconds) and tooltip text
-    let bRollSections = [
-      { start: 10, end: 20, tooltip: "Use nature B-roll here" },
-      { start: 30, end: 40, tooltip: "Insert city B-roll" },
-      { start: 50, end: 60, tooltip: "Add crowd footage" }
-    ];
 
     // Randomized B-roll ideas
     const bRollIdeas = [
@@ -145,6 +137,8 @@
       "Add night cityscapes"
     ];
 
+    let bRollSections = [];
+
     // Load the video from file input
     videoFileInput.addEventListener('change', function(event) {
       const file = event.target.files[0];
@@ -152,21 +146,38 @@
       video.src = fileURL;
 
       video.addEventListener('loadedmetadata', function() {
-        // Set the timeline width based on the video duration
-        const videoDuration = video.duration;
         timeline.innerHTML = ''; // Clear existing highlights
-        bRollSections.forEach(section => {
-          addHighlightToTimeline(section.start, section.end, section.tooltip, videoDuration);
-        });
+        bRollSections = []; // Reset sections
+        createBrollSuggestions(); // Automatically suggest B-roll
       });
     });
+
+    // Automatically suggest B-roll by listening to the video
+    function createBrollSuggestions() {
+      const videoDuration = video.duration;
+
+      // For now, randomly add 3 to 5 B-roll suggestions for testing purposes
+      const bRollCount = Math.floor(Math.random() * 3) + 3;
+
+      for (let i = 0; i < bRollCount; i++) {
+        const start = Math.random() * (videoDuration - 10);
+        const end = start + Math.random() * 10 + 5;
+        const idea = bRollIdeas[Math.floor(Math.random() * bRollIdeas.length)];
+
+        bRollSections.push({ start, end, tooltip: idea });
+      }
+
+      // Add highlights to the timeline
+      bRollSections.forEach(section => {
+        addHighlightToTimeline(section.start, section.end, section.tooltip, videoDuration);
+      });
+    }
 
     // Add highlight for B-roll sections
     function addHighlightToTimeline(start, end, tooltip, videoDuration) {
       const highlightDiv = document.createElement('div');
       const startPercentage = (start / videoDuration) * 100;
-      const endPercentage = (end / videoDuration) * 100;
-      const widthPercentage = endPercentage - startPercentage;
+      const widthPercentage = ((end - start) / videoDuration) * 100;
 
       highlightDiv.classList.add('highlight');
       highlightDiv.style.left = startPercentage + '%';
@@ -180,24 +191,9 @@
       timeline.appendChild(highlightDiv);
     }
 
-    // Function to add a new B-roll section dynamically
-    function addRandomBrollSection() {
-      const videoDuration = video.duration;
-      if (!videoDuration) return;
-
-      const randomStart = Math.random() * (videoDuration - 10); // Random start time
-      const randomEnd = randomStart + Math.random() * 10 + 5; // Random end time, 5-15 sec long
-      const randomTooltip = bRollIdeas[Math.floor(Math.random() * bRollIdeas.length)];
-
-      const newSection = { start: randomStart, end: randomEnd, tooltip: randomTooltip };
-      bRollSections.push(newSection);
-      addHighlightToTimeline(newSection.start, newSection.end, newSection.tooltip, videoDuration);
-    }
-
-    // Add event listener to button for adding more B-roll ideas
-    addBrollButton.addEventListener('click', addRandomBrollSection);
+    // Button to trigger B-roll suggestion generation
+    addBrollButton.addEventListener('click', createBrollSuggestions);
   </script>
 
 </body>
 </html>
-
