@@ -1,195 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Studio Analytics Clone</title>
-    <style>
-        body {
-            background-color: #181818;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #202020;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 20px;
-        }
-        .sidebar h2 {
-            font-size: 20px;
-            margin-bottom: 30px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin-bottom: 15px;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 20px;
-        }
-        .analytics-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .analytics-header h1 {
-            font-size: 24px;
-        }
-        .analytics-header .date-range {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-        .analytics-overview {
-            background-color: #282828;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        .overview-item {
-            display: inline-block;
-            width: 30%;
-            margin-right: 10px;
-            text-align: center;
-        }
-        .overview-item:last-child {
-            margin-right: 0;
-        }
-        .overview-item h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .overview-item p {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .realtime {
-            margin-bottom: 20px;
-        }
-        .socialblade-info {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .socialblade-info h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        .socialblade-info p {
-            margin: 0;
-            font-size: 16px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 12px;
-            color: #999;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video B-roll Assistant</title>
+  <style>
+    body {
+      background-color: #181818;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #video-container {
+      width: 80%;
+      max-width: 800px;
+      position: relative;
+    }
+
+    #video {
+      width: 100%;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+
+    #timeline {
+      margin-top: 10px;
+      width: 100%;
+      height: 5px;
+      background-color: #444;
+      position: relative;
+      border-radius: 5px;
+    }
+
+    .highlight {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background-color: yellow;
+      opacity: 0.7;
+      pointer-events: all;
+      border-radius: 2px;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      width: 180px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .highlight:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #upload-area {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #555;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Your Channel</h2>
-        <ul>
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Content</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Settings</a></li>
-        </ul>
-    </div>
+  <h1>Video B-roll Assistant</h1>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Analytics Header -->
-        <div class="analytics-header">
-            <h1>Channel Analytics</h1>
-            <div class="date-range">Aug 12 – Sep 8, 2024</div>
-        </div>
+  <div id="video-container">
+    <video id="video" controls></video>
+    <div id="timeline"></div>
+  </div>
 
-        <!-- Overview Section -->
-        <div class="analytics-overview">
-            <div class="overview-item">
-                <h3>Views</h3>
-                <p>4.7K</p>
-                <span>About the same as usual</span>
-            </div>
-            <div class="overview-item">
-                <h3>Watch time (hours)</h3>
-                <p>33.7</p>
-                <span>67% less than previous 28 days</span>
-            </div>
-            <div class="overview-item">
-                <h3>Subscribers</h3>
-                <p>+137</p>
-                <span>60% less than previous 28 days</span>
-            </div>
-        </div>
+  <div id="upload-area">
+    <input type="file" id="videoFile" accept="video/*">
+    <button id="addBrollButton">Generate B-roll Suggestions</button>
+  </div>
 
-        <!-- Realtime Section -->
-        <div class="realtime analytics-overview">
-            <h3>Realtime</h3>
-            <p>1,881 Subscribers</p>
-            <p>273 Views in the last 48 hours</p>
-            <canvas id="realtimeChart"></canvas>
-        </div>
+  <script>
+    const video = document.getElementById('video');
+    const videoFileInput = document.getElementById('videoFile');
+    const timeline = document.getElementById('timeline');
+    const addBrollButton = document.getElementById('addBrollButton');
 
-        <!-- SocialBlade Info -->
-        <div class="socialblade-info">
-            <h2>SocialBlade Statistics</h2>
-            <p><strong>Estimated Earnings:</strong> $12 - $200 per month</p>
-            <p><strong>Total Views:</strong> 500K+</p>
-            <p><strong>Channel Rank:</strong> #345,678</p>
-        </div>
-    </div>
+    // Randomized B-roll ideas
+    const bRollIdeas = [
+      "Use drone shots",
+      "Add slow-motion close-ups",
+      "Include scenic landscapes",
+      "Show urban street footage",
+      "Use time-lapse of traffic",
+      "Insert wildlife scenes",
+      "Show people interacting",
+      "Include ocean waves",
+      "Add night cityscapes"
+    ];
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>Created with ❤️ by You</p>
-    </div>
+    let bRollSections = [];
 
-    <!-- JavaScript (for the chart) -->
-    <script>
-        const ctx = document.getElementById('realtimeChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['-48h', '-36h', '-24h', '-12h', 'Now'],
-                datasets: [{
-                    label: 'Views',
-                    data: [50, 100, 150, 200, 273],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+    // Load the video from file input
+    videoFileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const fileURL = URL.createObjectURL(file);
+      video.src = fileURL;
 
-    <!-- Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      video.addEventListener('loadedmetadata', function() {
+        timeline.innerHTML = ''; // Clear existing highlights
+        bRollSections = []; // Reset sections
+        createBrollSuggestions(); // Automatically suggest B-roll
+      });
+    });
+
+    // Automatically suggest B-roll by listening to the video
+    function createBrollSuggestions() {
+      const videoDuration = video.duration;
+
+      // For now, randomly add 3 to 5 B-roll suggestions for testing purposes
+      const bRollCount = Math.floor(Math.random() * 3) + 3;
+
+      for (let i = 0; i < bRollCount; i++) {
+        const start = Math.random() * (videoDuration - 10);
+        const end = start + Math.random() * 10 + 5;
+        const idea = bRollIdeas[Math.floor(Math.random() * bRollIdeas.length)];
+
+        bRollSections.push({ start, end, tooltip: idea });
+      }
+
+      // Add highlights to the timeline
+      bRollSections.forEach(section => {
+        addHighlightToTimeline(section.start, section.end, section.tooltip, videoDuration);
+      });
+    }
+
+    // Add highlight for B-roll sections
+    function addHighlightToTimeline(start, end, tooltip, videoDuration) {
+      const highlightDiv = document.createElement('div');
+      const startPercentage = (start / videoDuration) * 100;
+      const widthPercentage = ((end - start) / videoDuration) * 100;
+
+      highlightDiv.classList.add('highlight');
+      highlightDiv.style.left = startPercentage + '%';
+      highlightDiv.style.width = widthPercentage + '%';
+
+      const tooltipDiv = document.createElement('div');
+      tooltipDiv.classList.add('tooltip');
+      tooltipDiv.textContent = tooltip;
+      highlightDiv.appendChild(tooltipDiv);
+
+      timeline.appendChild(highlightDiv);
+    }
+
+    // Button to trigger B-roll suggestion generation
+    addBrollButton.addEventListener('click', createBrollSuggestions);
+  </script>
 
 </body>
 </html>
