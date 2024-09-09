@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video B-roll Assistant</title>
+  <title>Audio Transcript B-roll Assistant</title>
   <style>
     body {
       background-color: #181818;
@@ -106,7 +106,7 @@
 </head>
 <body>
 
-  <h1>Video B-roll Assistant</h1>
+  <h1>Audio Transcript B-roll Assistant</h1>
 
   <div id="video-container">
     <video id="video" controls></video>
@@ -115,7 +115,7 @@
 
   <div id="upload-area">
     <input type="file" id="videoFile" accept="video/*">
-    <button id="addBrollButton">Generate B-roll Suggestions</button>
+    <button id="addBrollButton">Generate B-roll from Transcript</button>
   </div>
 
   <script>
@@ -124,19 +124,18 @@
     const timeline = document.getElementById('timeline');
     const addBrollButton = document.getElementById('addBrollButton');
 
-    // Randomized B-roll ideas
-    const bRollIdeas = [
-      "Use drone shots",
-      "Add slow-motion close-ups",
-      "Include scenic landscapes",
-      "Show urban street footage",
-      "Use time-lapse of traffic",
-      "Insert wildlife scenes",
-      "Show people interacting",
-      "Include ocean waves",
-      "Add night cityscapes"
-    ];
+    // B-roll mapping ideas based on keywords
+    const bRollMapping = {
+      "forest": "Forest scenery",
+      "car": "Car driving on road",
+      "city": "City skyline at dusk",
+      "water": "Flowing water or river",
+      "people": "People interacting",
+      "night": "Night sky or cityscape",
+      "animal": "Wildlife or animals"
+    };
 
+    let transcript = '';
     let bRollSections = [];
 
     // Load the video from file input
@@ -144,28 +143,51 @@
       const file = event.target.files[0];
       const fileURL = URL.createObjectURL(file);
       video.src = fileURL;
-
-      video.addEventListener('loadedmetadata', function() {
-        timeline.innerHTML = ''; // Clear existing highlights
-        bRollSections = []; // Reset sections
-        createBrollSuggestions(); // Automatically suggest B-roll
-      });
     });
 
-    // Automatically suggest B-roll by listening to the video
-    function createBrollSuggestions() {
+    // Web Speech API for basic speech-to-text functionality
+    function startSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        transcript = event.results[0][0].transcript;
+        console.log('Transcript:', transcript);
+        generateBrollFromTranscript();
+      };
+
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+      };
+
+      recognition.onend = function() {
+        console.log('Speech recognition ended.');
+      };
+    }
+
+    // Generate B-roll suggestions based on transcript
+    function generateBrollFromTranscript() {
       const videoDuration = video.duration;
 
-      // For now, randomly add 3 to 5 B-roll suggestions for testing purposes
-      const bRollCount = Math.floor(Math.random() * 3) + 3;
+      // Clear existing timeline highlights
+      timeline.innerHTML = '';
+      bRollSections = [];
 
-      for (let i = 0; i < bRollCount; i++) {
-        const start = Math.random() * (videoDuration - 10);
-        const end = start + Math.random() * 10 + 5;
-        const idea = bRollIdeas[Math.floor(Math.random() * bRollIdeas.length)];
+      // Search transcript for keywords to suggest B-roll
+      Object.keys(bRollMapping).forEach(keyword => {
+        if (transcript.includes(keyword)) {
+          const start = Math.random() * (videoDuration - 10);  // Random start for demo
+          const end = start + Math.random() * 10 + 5;
+          const idea = bRollMapping[keyword];
 
-        bRollSections.push({ start, end, tooltip: idea });
-      }
+          bRollSections.push({ start, end, tooltip: idea });
+        }
+      });
 
       // Add highlights to the timeline
       bRollSections.forEach(section => {
@@ -177,11 +199,11 @@
     function addHighlightToTimeline(start, end, tooltip, videoDuration) {
       const highlightDiv = document.createElement('div');
       const startPercentage = (start / videoDuration) * 100;
-      const widthPercentage = ((end - start) / videoDuration) * 100;
+      const widthPercentage = 2;  // Small yellow lines for b-roll indicators
 
       highlightDiv.classList.add('highlight');
       highlightDiv.style.left = startPercentage + '%';
-      highlightDiv.style.width = widthPercentage + '%';
+      highlightDiv.style.width = widthPercentage + '%';  // Small line
 
       const tooltipDiv = document.createElement('div');
       tooltipDiv.classList.add('tooltip');
@@ -191,8 +213,10 @@
       timeline.appendChild(highlightDiv);
     }
 
-    // Button to trigger B-roll suggestion generation
-    addBrollButton.addEventListener('click', createBrollSuggestions);
+    // Button to trigger B-roll suggestion generation from transcript
+    addBrollButton.addEventListener('click', function() {
+      startSpeechRecognition();
+    });
   </script>
 
 </body>
