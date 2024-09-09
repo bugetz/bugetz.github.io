@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio Transcript B-roll Assistant</title>
+  <title>Advanced Video B-roll Assistant</title>
   <style>
     body {
       background-color: #181818;
@@ -20,12 +20,14 @@
     h1 {
       margin-bottom: 20px;
       text-align: center;
+      font-size: 32px;
     }
 
     #video-container {
       width: 80%;
       max-width: 800px;
       position: relative;
+      margin-bottom: 20px;
     }
 
     #video {
@@ -102,11 +104,17 @@
     button:hover {
       background-color: #666;
     }
+
+    #feedback {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #f0ad4e;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Audio Transcript B-roll Assistant</h1>
+  <h1>Advanced Audio Transcript B-roll Assistant</h1>
 
   <div id="video-container">
     <video id="video" controls></video>
@@ -118,13 +126,15 @@
     <button id="addBrollButton">Generate B-roll from Transcript</button>
   </div>
 
+  <div id="feedback"></div>
+
   <script>
     const video = document.getElementById('video');
     const videoFileInput = document.getElementById('videoFile');
     const timeline = document.getElementById('timeline');
     const addBrollButton = document.getElementById('addBrollButton');
+    const feedback = document.getElementById('feedback');
 
-    // B-roll mapping ideas based on keywords
     const bRollMapping = {
       "forest": "Forest scenery",
       "car": "Car driving on road",
@@ -132,7 +142,10 @@
       "water": "Flowing water or river",
       "people": "People interacting",
       "night": "Night sky or cityscape",
-      "animal": "Wildlife or animals"
+      "animal": "Wildlife or animals",
+      "phone": "People using phones",
+      "computer": "Typing on computers",
+      "music": "Musicians performing"
     };
 
     let transcript = '';
@@ -147,6 +160,8 @@
 
     // Web Speech API for basic speech-to-text functionality
     function startSpeechRecognition() {
+      feedback.textContent = 'Analyzing video for transcript...';
+
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
@@ -157,16 +172,16 @@
 
       recognition.onresult = function(event) {
         transcript = event.results[0][0].transcript;
-        console.log('Transcript:', transcript);
+        feedback.textContent = 'Transcript obtained. Generating B-roll suggestions...';
         generateBrollFromTranscript();
       };
 
       recognition.onerror = function(event) {
-        console.error('Speech recognition error:', event.error);
+        feedback.textContent = 'Error occurred during speech recognition: ' + event.error;
       };
 
       recognition.onend = function() {
-        console.log('Speech recognition ended.');
+        feedback.textContent = 'Transcript analysis complete. Check timeline for suggestions.';
       };
     }
 
@@ -217,6 +232,7 @@
     addBrollButton.addEventListener('click', function() {
       startSpeechRecognition();
     });
+
   </script>
 
 </body>
