@@ -3,26 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>budgetz</title>
+    <title>My Tools</title>
+    
+    <!-- Link to the favicon -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/256/217/217853.png" type="image/png">
+
     <style>
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1c1c1c;
             color: #d3d3d3;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: center;
         }
         h1 {
             font-size: 3rem;
-            margin-bottom: 20px;
             color: #d3d3d3;
             letter-spacing: 1.5px;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            text-align: center;
         }
         .btn {
             background-color: #2e2e2e;
@@ -37,8 +43,8 @@
             cursor: pointer;
             border-radius: 30px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         .btn:hover {
             background-color: #3a3a3a;
@@ -48,12 +54,14 @@
     </style>
 </head>
 <body>
-    <h1>tools</h1>
-    <div>
-        <a href="https://bugetz.github.io/youtube/" class="btn">YouTube Handle To URL</a>
-        <a href="https://bugetz.github.io/oldchannel/" class="btn">YouTube Channel Info</a>
-        <a href="https://example.com/tool3" class="btn">Not Done</a>
-        <a href="https://example.com/tool4" class="btn">Not Done</a>
+    <div class="container">
+        <h1>My Tools</h1>
+        <div>
+            <a href="https://bugetz.github.io/youtube/" class="btn">YouTube Handle To URL</a>
+            <a href="https://bugetz.github.io/oldchannel/" class="btn">YouTube Channel Info</a>
+            <a href="https://example.com/tool3" class="btn">Not Done</a>
+            <a href="https://example.com/tool4" class="btn">Not Done</a>
+        </div>
     </div>
 </body>
 </html>
