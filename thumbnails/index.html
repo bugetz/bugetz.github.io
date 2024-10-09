@@ -33,7 +33,7 @@
             text-decoration: none;
             display: inline-block;
             font-size: 18px;
-            margin: 10px auto;
+            margin: 10px 5px;
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s, transform 0.3s;
@@ -45,6 +45,10 @@
         .thumbnail {
             display: none;
             margin-top: 20px;
+        }
+        .thumbnail img {
+            max-width: 200px; /* Make the thumbnail image smaller */
+            height: auto;
         }
         .fullscreen {
             position: fixed;
@@ -66,13 +70,18 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: red;
+            background-color: #444; /* Dark grey */
             padding: 10px;
             border: none;
             color: white;
             cursor: pointer;
             border-radius: 5px;
             z-index: 10000;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -84,16 +93,30 @@
     <div id="thumbnailContainer" class="thumbnail">
         <img id="thumbnail" src="" alt="Thumbnail">
         <br>
-        <button class="btn" id="viewHD" onclick="viewInHD()">View in HD</button>
-        <br>
         <label for="sizeSelect">Select Thumbnail Size:</label>
         <select id="sizeSelect" onchange="resizeThumbnail()">
             <option value="default">Default (maxresdefault)</option>
-            <option value="420">420x240</option>
-            <option value="720">720x405</option>
+            <option value="sddefault">Standard Definition (SD - 420x240)</option>
+            <option value="hqdefault">High Quality (HQ - 480x360)</option>
+            <option value="mqdefault">Medium Quality (MQ - 320x180)</option>
+            <option value="maxresdefault">Maximum Resolution</option>
+            <option value="maxresdefault_720">720p</option>
+            <option value="maxresdefault_1080">1080p</option>
+            <option value="maxresdefault_1440">1440p</option>
+            <option value="maxresdefault_2160">2160p (4K)</option>
+            <option value="default_240">240p</option>
+            <option value="default_360">360p</option>
+            <option value="default_480">480p</option>
+            <option value="default_720">720p</option>
+            <option value="default_1080">1080p</option>
+            <option value="default_1440">1440p</option>
+            <option value="default_2160">2160p (4K)</option>
         </select>
         <br>
-        <button class="btn" id="downloadBtn" onclick="downloadThumbnail()">Download</button>
+        <div class="buttons-container">
+            <button class="btn" id="viewHD" onclick="viewInHD()">View in HD</button>
+            <button class="btn" id="downloadBtn" onclick="downloadThumbnail()">Download</button>
+        </div>
     </div>
 
     <div id="fullscreenContainer" class="fullscreen" style="display: none;">
@@ -116,13 +139,7 @@
         function resizeThumbnail() {
             const sizeSelect = document.getElementById('sizeSelect').value;
 
-            if (sizeSelect === '420') {
-                thumbnailSize = 'sddefault'; // 420x240
-            } else if (sizeSelect === '720') {
-                thumbnailSize = 'hqdefault'; // 720x405
-            } else {
-                thumbnailSize = 'maxresdefault'; // Default size
-            }
+            thumbnailSize = sizeSelect; // Use selected size directly
             getThumbnail(); // Refresh thumbnail based on new size
         }
 
