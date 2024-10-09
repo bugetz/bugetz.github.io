@@ -21,7 +21,8 @@
             padding: 10px;
             margin: 10px auto;
             border-radius: 5px;
-            width: calc(100% - 22px);
+            width: 50%; /* Adjusted width */
+            max-width: 400px; /* Maximum width */
             box-sizing: border-box;
         }
         .btn {
@@ -83,6 +84,26 @@
             justify-content: center;
             align-items: center;
         }
+        .history-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto; /* Enable scrolling */
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left; /* Align text to the left for better readability */
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .history-item img {
+            max-width: 100px; /* Limit width for history thumbnails */
+            height: auto;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -95,22 +116,14 @@
         <br>
         <label for="sizeSelect">Select Thumbnail Size:</label>
         <select id="sizeSelect" onchange="resizeThumbnail()">
-            <option value="default">Default (maxresdefault)</option>
+            <option value="maxresdefault">Default (maxresdefault)</option>
             <option value="sddefault">Standard Definition (SD - 420x240)</option>
             <option value="hqdefault">High Quality (HQ - 480x360)</option>
             <option value="mqdefault">Medium Quality (MQ - 320x180)</option>
-            <option value="maxresdefault">Maximum Resolution</option>
             <option value="maxresdefault_720">720p</option>
             <option value="maxresdefault_1080">1080p</option>
             <option value="maxresdefault_1440">1440p</option>
             <option value="maxresdefault_2160">2160p (4K)</option>
-            <option value="default_240">240p</option>
-            <option value="default_360">360p</option>
-            <option value="default_480">480p</option>
-            <option value="default_720">720p</option>
-            <option value="default_1080">1080p</option>
-            <option value="default_1440">1440p</option>
-            <option value="default_2160">2160p (4K)</option>
         </select>
         <br>
         <div class="buttons-container">
@@ -124,8 +137,14 @@
         <img id="fullscreenImage" src="" alt="Fullscreen Thumbnail">
     </div>
 
+    <div class="history-container" id="historyContainer">
+        <h2>Thumbnail History</h2>
+        <div id="historyList"></div>
+    </div>
+
     <script>
         let thumbnailSize = 'maxresdefault';
+        const historyList = document.getElementById('historyList');
 
         function getThumbnail() {
             const url = document.getElementById('videoUrl').value;
@@ -134,11 +153,11 @@
 
             document.getElementById('thumbnail').src = thumbnailUrl;
             document.getElementById('thumbnailContainer').style.display = 'block';
+            addToHistory(thumbnailUrl); // Add thumbnail to history
         }
 
         function resizeThumbnail() {
             const sizeSelect = document.getElementById('sizeSelect').value;
-
             thumbnailSize = sizeSelect; // Use selected size directly
             getThumbnail(); // Refresh thumbnail based on new size
         }
@@ -161,6 +180,25 @@
 
         function exitFullscreen() {
             document.getElementById('fullscreenContainer').style.display = 'none';
+        }
+
+        function addToHistory(thumbnailUrl) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <img src="${thumbnailUrl}" alt="History Thumbnail">
+                <button class="btn" onclick="downloadFromHistory('${thumbnailUrl}')">Download</button>
+            `;
+            historyList.appendChild(historyItem);
+        }
+
+        function downloadFromHistory(thumbnailUrl) {
+            const link = document.createElement('a');
+            link.href = thumbnailUrl;
+            link.download = 'thumbnail.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
