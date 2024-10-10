@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Breach Checker</title>
+    <title>BRO WORKr</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,50 +49,39 @@
 </head>
 <body>
     <div class="container">
-        <h1>Password Breach Checker</h1>
-        <input type="text" id="password" placeholder="Enter password to check" />
+        <h1>Username and Password Breach Checker</h1>
+        <input type="text" id="username" placeholder="Enter username to check" />
         <button id="checkButton">Check Breach</button>
         <div id="result"></div>
     </div>
 
     <script>
-        document.getElementById('checkButton').addEventListener('click', async () => {
-            const password = document.getElementById('password').value;
-            const resultDiv = document.getElementById('result');
+        // Sample breached usernames with associated passwords for demonstration
+        const breachedData = {
+            "john_doe": ["123456", "password", "123456789"],
+            "jane_smith": ["qwerty", "letmein", "12345678"],
+            "admin": ["admin123", "password123", "abc123"],
+            "user123": ["password1", "welcome", "letmein"],
+            "test_user": ["test123", "userpass", "mypassword"]
+        };
 
-            if (!password) {
-                resultDiv.innerText = 'Please enter a password.';
+        document.getElementById('checkButton').addEventListener('click', () => {
+            const username = document.getElementById('username').value.toLowerCase();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            if (!username) {
+                resultDiv.innerText = 'Please enter a username.';
                 return;
             }
 
-            try {
-                const sha1Password = await sha1(password);
-                const prefix = sha1Password.slice(0, 5);
-                const suffix = sha1Password.slice(5);
-
-                const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
-                const data = await response.text();
-
-                const matches = data.split('\n').filter(line => line.startsWith(suffix));
-                const breachCount = matches.length > 0 ? matches[0].split(':')[1] : 0;
-
-                if (breachCount > 0) {
-                    resultDiv.innerText = `Your password has been found in ${breachCount} data breaches.`;
-                } else {
-                    resultDiv.innerText = 'Your password has not been found in any breaches.';
-                }
-            } catch (error) {
-                resultDiv.innerText = 'Error checking the password. Please try again later.';
+            if (breachedData[username]) {
+                resultDiv.innerHTML = `<strong>The username "${username}" has been found in data breaches with the following breached passwords:</strong><br>`;
+                resultDiv.innerHTML += breachedData[username].join('<br>');
+            } else {
+                resultDiv.innerText = `The username "${username}" has not been found in any breaches.`;
             }
         });
-
-        // SHA-1 hashing function
-        async function sha1(msg) {
-            const msgBuffer = new TextEncoder().encode(msg);
-            const hashBuffer = await crypto.subtle.digest('SHA-1', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-        }
     </script>
 </body>
 </html>
