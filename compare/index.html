@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Comparison</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        .image-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .image-container {
+            background-color: #333333;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .image-preview {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 8px;
+            border: 2px solid #444444;
+        }
+        .upload-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .upload-button {
+            background-color: #444444;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .upload-button:hover {
+            background-color: #666666;
+        }
+        #image-count {
+            margin-top: 10px;
+            color: #cccccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Compare Images</h1>
+        <p>Upload or paste up to 4 images to compare them side by side.</p>
+        <div id="image-count">Select number of images to compare:</div>
+        <div class="upload-area">
+            <input type="file" accept="image/*" onchange="loadImage(event, 0)" class="upload-button" id="upload-1">
+            <input type="file" accept="image/*" onchange="loadImage(event, 1)" class="upload-button" id="upload-2" style="display: none;">
+            <input type="file" accept="image/*" onchange="loadImage(event, 2)" class="upload-button" id="upload-3" style="display: none;">
+            <input type="file" accept="image/*" onchange="loadImage(event, 3)" class="upload-button" id="upload-4" style="display: none;">
+        </div>
+        <div class="image-grid" id="image-grid">
+            <!-- Images will display here -->
+        </div>
+    </div>
+    
+    <script>
+        const maxImages = 4;
+
+        function loadImage(event, index) {
+            const files = event.target.files;
+            if (files && files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    displayImage(e.target.result, index);
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        }
+
+        function displayImage(src, index) {
+            let imageContainer = document.getElementById(`image-container-${index}`);
+            if (!imageContainer) {
+                imageContainer = document.createElement("div");
+                imageContainer.className = "image-container";
+                imageContainer.id = `image-container-${index}`;
+                const img = document.createElement("img");
+                img.className = "image-preview";
+                img.id = `image-preview-${index}`;
+                imageContainer.appendChild(img);
+                document.getElementById("image-grid").appendChild(imageContainer);
+            }
+            document.getElementById(`image-preview-${index}`).src = src;
+            if (index < maxImages - 1) {
+                document.getElementById(`upload-${index + 2}`).style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
 
