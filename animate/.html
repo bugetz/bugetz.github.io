@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Video with Full 5-Second Black Fade-In</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+        }
+        .upload-area, .file-input-container {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .upload-area.dragover {
+            border-color: #333;
+            background-color: #f0f0f0;
+        }
+        #video {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Upload an Image to Create a Video</h1>
+
+    <!-- File input button -->
+    <div class="file-input-container">
+        <label for="fileInput">Choose an Image File</label>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    </div>
+
+    <!-- Drag and Drop area -->
+    <div class="upload-area" id="dropArea">
+        Drag & Drop Image Here
+    </div>
+
+    <!-- Video element to display result -->
+    <video id="video" controls width="640" height="480"></video>
+
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropArea = document.getElementById('dropArea');
+        const videoElement = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Handle file input
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                createVideoFromImage(file);
+            }
+        });
+
+        // Handle drag and drop
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragover');
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                createVideoFromImage(file);
+            }
+        });
+
+        // Function to create video from image with full 5-second black fade-in effect
+        async function createVideoFromImage(file) {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = async () => {
+                const fps = 30;
+                const duration = 5; // 5 seconds
+                const frames = duration * fps;
+
+                // Set up canvas dimensions to match the image
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                const stream = canvas.captureStream(fps);
+                const recorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                recorder.ondataavailable = (e) => chunks.push(e.data);
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/mp4' });
+                    videoElement.src = URL.createObjectURL(blob);
+                    videoElement.style.display = 'block';
+                };
+
+                recorder.start();
+
+                for (let i = 0; i < frames; i++) {
+                    const opacity = Math.max(1 - i / frames, 0); // Gradual fade over 5 seconds
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw the image
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Draw black rectangle with gradually decreasing opacity
+                    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    await new Promise((resolve) => setTimeout(resolve, 1000 / fps));
+                }
+
+                recorder.stop();
+            };
+        }
+    </script>
+</body>
+</html>
