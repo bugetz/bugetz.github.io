@@ -26,7 +26,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        .upload-area, .file-input-container {
+        .upload-area {
             background-color: #333;
             border: 2px dashed #666;
             color: #aaa;
@@ -39,7 +39,7 @@
             transition: background-color 0.3s;
         }
 
-        .upload-area.dragover, .file-input-container:hover {
+        .upload-area.dragover {
             background-color: #444;
         }
 
@@ -84,17 +84,11 @@
 </head>
 <body>
 
-    <h1>Upload an Image to Create a Video</h1>
-
-    <!-- File input button -->
-    <div class="file-input-container">
-        <label for="fileInput">Choose an Image File</label>
-        <input type="file" id="fileInput" accept="image/*" style="display: none;">
-    </div>
+    <h1>Drag & Drop or Paste an Image to Create a Video</h1>
 
     <!-- Drag and Drop area -->
     <div class="upload-area" id="dropArea">
-        Drag & Drop Image Here
+        Drag & Drop Image Here or Paste from Clipboard
     </div>
 
     <!-- Loading spinner -->
@@ -112,7 +106,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
         const dropArea = document.getElementById('dropArea');
         const videoElement = document.getElementById('video');
         const saveGifButton = document.getElementById('saveGifButton');
@@ -121,14 +114,6 @@
         const spinner = document.getElementById('spinner');
 
         let framesArray = [];
-
-        // Handle file input
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                createVideoFromImage(file);
-            }
-        });
 
         // Handle drag and drop
         dropArea.addEventListener('dragover', (event) => {
@@ -149,6 +134,18 @@
             }
         });
 
+        // Handle paste from clipboard
+        document.addEventListener('paste', async (event) => {
+            const items = event.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    createVideoFromImage(file);
+                    break;
+                }
+            }
+        });
+
         // Function to create video from image with full 5-second black fade-in effect
         async function createVideoFromImage(file) {
             spinner.style.display = 'block'; // Show spinner
@@ -161,7 +158,7 @@
 
             img.onload = async () => {
                 const fps = 30;
-                const duration = 5; // 5 seconds
+                const duration = 5; // Fixed 5 seconds
                 const frames = duration * fps;
 
                 // Set up canvas dimensions to match the image
