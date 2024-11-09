@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to GIF Converter</title>
+    <style>
+        /* Dark theme styling */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1c1c1c, #000);
+            background-size: 400% 400%;
+            animation: gradientBackground 10s ease infinite;
+            color: #ccc;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .upload-area {
+            background-color: #333;
+            border: 2px dashed #666;
+            color: #aaa;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-area.dragover {
+            background-color: #444;
+        }
+
+        #previewVideo, #downloadGifButton {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            display: none;
+            border: 4px solid #333;
+            border-top: 4px solid #aaa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #downloadGifButton {
+            padding: 10px 20px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #downloadGifButton:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Upload a Video to Convert to GIF</h1>
+
+    <!-- Drag and Drop area -->
+    <div class="upload-area" id="dropArea">
+        Drag & Drop Video Here (Max 50MB)
+    </div>
+
+    <!-- Loading spinner -->
+    <div class="spinner" id="spinner"></div>
+
+    <!-- Video element to preview the upload -->
+    <video id="previewVideo" controls width="320" height="240"></video>
+
+    <!-- Download GIF button -->
+    <button id="downloadGifButton">Download as GIF</button>
+
+    <!-- gifshot library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+
+    <script>
+        const dropArea = document.getElementById('dropArea');
+        const previewVideo = document.getElementById('previewVideo');
+        const downloadGifButton = document.getElementById('downloadGifButton');
+        const spinner = document.getElementById('spinner');
+
+        // Handle drag and drop
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragover');
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) {
+                convertVideoToGif(file);
+            } else {
+                alert("Please upload a video file under 50MB.");
+            }
+        });
+
+        // Function to handle video to GIF conversion
+        function convertVideoToGif(file) {
+            previewVideo.style.display = 'none';
+            downloadGifButton.style.display = 'none';
+            spinner.style.display = 'block'; // Show spinner
+
+            // Create a URL for the video preview
+            const videoURL = URL.createObjectURL(file);
+            previewVideo.src = videoURL;
+            previewVideo.style.display = 'block';
+
+            // Load video data into gifshot
+            gifshot.createGIF({
+                video: [videoURL],
+                gifWidth: 320,
+                gifHeight: 240,
+                interval: 0.1, // Adjusts the GIF frame rate for smaller file size
+            }, (obj) => {
+                if (!obj.error) {
+                    // Create download link for the GIF
+                    downloadGifButton.style.display = 'inline-block';
+                    downloadGifButton.href = obj.image;
+                    downloadGifButton.download = 'converted_video.gif';
+                    spinner.style.display = 'none'; // Hide spinner
+                } else {
+                    alert("Failed to convert video to GIF.");
+                    spinner.style.display = 'none'; // Hide spinner if there's an error
+                }
+            });
+        }
+    </script>
+</body>
+</html>
