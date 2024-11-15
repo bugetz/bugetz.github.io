@@ -1,129 +1,253 @@
-const dropArea = document.getElementById('dropArea');
-const videoElement = document.getElementById('video');
-const saveGifButton = document.getElementById('saveGifButton');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const spinner = document.getElementById('spinner');
-const fileInput = document.getElementById('fileInput');  // New file input element
-
-let framesArray = [];
-
-// Default fade-in and video duration (in seconds)
-const fadeInDuration = 3; // Fade-in duration (can be adjusted)
-const videoDuration = 5; // Total video duration (fixed at 5 seconds)
-const fps = 30; // Frames per second (30fps)
-
-// Handle drag and drop
-dropArea.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    dropArea.classList.add('dragover');
-});
-
-dropArea.addEventListener('dragleave', () => {
-    dropArea.classList.remove('dragover');
-});
-
-dropArea.addEventListener('drop', (event) => {
-    event.preventDefault();
-    dropArea.classList.remove('dragover');
-    const file = event.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-        createVideoFromImage(file);
-    }
-});
-
-// Handle paste from clipboard
-document.addEventListener('paste', async (event) => {
-    const items = event.clipboardData.items;
-    for (let item of items) {
-        if (item.type.startsWith('image/')) {
-            const file = item.getAsFile();
-            createVideoFromImage(file);
-            break;
-        }
-    }
-});
-
-// Handle file input
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        createVideoFromImage(file);
-    }
-});
-
-// Function to create video from image with fade-in effect
-async function createVideoFromImage(file) {
-    spinner.style.display = 'block'; // Show spinner
-    videoElement.style.display = 'none'; // Hide video initially
-    saveGifButton.style.display = 'none'; // Hide the GIF button initially
-    framesArray = []; // Clear frames array
-
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-
-    img.onload = async () => {
-        const frames = videoDuration * fps; // Total frames for the video
-        const fadeInFrames = fadeInDuration * fps; // Frames for the fade-in effect
-        const fadeOutFrames = frames - fadeInFrames; // Remaining frames for fade-out (non-fade part)
-
-        // Set up canvas dimensions to match the image
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        const stream = canvas.captureStream(fps);
-        const recorder = new MediaRecorder(stream);
-        const chunks = [];
-
-        recorder.ondataavailable = (e) => chunks.push(e.data);
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/mp4' });
-            videoElement.src = URL.createObjectURL(blob);
-            spinner.style.display = 'none'; // Hide spinner
-            videoElement.style.display = 'block'; // Show video
-            saveGifButton.style.display = 'inline-block'; // Show "Save as GIF" button
-        };
-
-        recorder.start();
-
-        for (let i = 0; i < frames; i++) {
-            // Calculate opacity for fade-in
-            const opacity = i < fadeInFrames ? Math.max(1 - i / fadeInFrames, 0) : 0; // Gradual fade-in effect
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw the image
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            // Apply the opacity effect (black fade-in)
-            ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Store each frame for GIF conversion
-            framesArray.push(canvas.toDataURL("image/png"));
-
-            // Wait for the next frame (simulate frame rate)
-            await new Promise((resolve) => setTimeout(resolve, 1000 / fps));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Video with Fade-In Effect</title>
+    <style>
+        /* Dark theme styling */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1c1c1c, #000);
+            background-size: 400% 400%;
+            animation: gradientBackground 10s ease infinite;
+            color: #ccc;
         }
 
-        recorder.stop();
-    };
-}
-
-// Convert frames to GIF and download
-saveGifButton.addEventListener('click', () => {
-    gifshot.createGIF({
-        images: framesArray,
-        interval: 0.033, // about 30 fps
-        gifWidth: canvas.width,
-        gifHeight: canvas.height
-    }, (obj) => {
-        if (!obj.error) {
-            const gifBlob = obj.image;
-            const link = document.createElement('a');
-            link.href = gifBlob;
-            link.download = 'fade_in_animation.gif';
-            link.click();
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-    });
-});
+
+        .upload-area {
+            background-color: #333;
+            border: 2px dashed #666;
+            color: #aaa;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-area.dragover {
+            background-color: #444;
+        }
+
+        #video {
+            margin-top: 20px;
+            display: none;
+            border-radius: 8px;
+        }
+
+        .spinner {
+            display: none;
+            border: 4px solid #333;
+            border-top: 4px solid #aaa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #saveGifButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #saveGifButton:hover {
+            background-color: #666;
+        }
+
+        #fileInput {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Drag & Drop or Paste an Image to Create a Video with Fade-In Effect</h1>
+
+    <!-- Drag and Drop area -->
+    <div class="upload-area" id="dropArea">
+        Drag & Drop Image Here or Paste from Clipboard
+    </div>
+
+    <!-- File input for manual file upload -->
+    <input type="file" id="fileInput" accept="image/*">
+
+    <!-- Loading spinner -->
+    <div class="spinner" id="spinner"></div>
+
+    <!-- Video element to display result -->
+    <video id="video" controls width="640" height="480"></video>
+
+    <!-- Save as GIF button -->
+    <button id="saveGifButton">Save as GIF</button>
+
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <!-- gifshot library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+
+    <script>
+        const dropArea = document.getElementById('dropArea');
+        const videoElement = document.getElementById('video');
+        const saveGifButton = document.getElementById('saveGifButton');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const spinner = document.getElementById('spinner');
+        const fileInput = document.getElementById('fileInput');  // New file input element
+
+        let framesArray = [];
+
+        // Default fade-in and video duration (in seconds)
+        const fadeInDuration = 3; // Fade-in duration (can be adjusted)
+        const videoDuration = 5; // Total video duration (fixed at 5 seconds)
+        const fps = 30; // Frames per second (30fps)
+
+        // Handle drag and drop
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragover');
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                createVideoFromImage(file);
+            }
+        });
+
+        // Handle paste from clipboard
+        document.addEventListener('paste', async (event) => {
+            const items = event.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    createVideoFromImage(file);
+                    break;
+                }
+            }
+        });
+
+        // Handle file input
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                createVideoFromImage(file);
+            }
+        });
+
+        // Function to create video from image with fade-in effect
+        async function createVideoFromImage(file) {
+            spinner.style.display = 'block'; // Show spinner
+            videoElement.style.display = 'none'; // Hide video initially
+            saveGifButton.style.display = 'none'; // Hide the GIF button initially
+            framesArray = []; // Clear frames array
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = async () => {
+                const frames = videoDuration * fps; // Total frames for the video
+                const fadeInFrames = fadeInDuration * fps; // Frames for the fade-in effect
+                const fadeOutFrames = frames - fadeInFrames; // Remaining frames for fade-out (non-fade part)
+
+                // Set up canvas dimensions to match the image
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                const stream = canvas.captureStream(fps);
+                const recorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                recorder.ondataavailable = (e) => chunks.push(e.data);
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/mp4' });
+                    videoElement.src = URL.createObjectURL(blob);
+                    spinner.style.display = 'none'; // Hide spinner
+                    videoElement.style.display = 'block'; // Show video
+                    saveGifButton.style.display = 'inline-block'; // Show "Save as GIF" button
+                };
+
+                recorder.start();
+
+                for (let i = 0; i < frames; i++) {
+                    // Calculate opacity for fade-in
+                    const opacity = i < fadeInFrames ? Math.max(1 - i / fadeInFrames, 0) : 0; // Gradual fade-in effect
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw the image
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Apply the opacity effect (black fade-in)
+                    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Store each frame for GIF conversion
+                    framesArray.push(canvas.toDataURL("image/png"));
+
+                    // Wait for the next frame (simulate frame rate)
+                    await new Promise((resolve) => setTimeout(resolve, 1000 / fps));
+                }
+
+                recorder.stop();
+            };
+        }
+
+        // Convert frames to GIF and download
+        saveGifButton.addEventListener('click', () => {
+            gifshot.createGIF({
+                images: framesArray,
+                interval: 0.033, // about 30 fps
+                gifWidth: canvas.width,
+                gifHeight: canvas.height
+            }, (obj) => {
+                if (!obj.error) {
+                    const gifBlob = obj.image;
+                    const link = document.createElement('a');
+                    link.href = gifBlob;
+                    link.download = 'fade_in_animation.gif';
+                    link.click();
+                }
+            });
+        });
+    </script>
+</body>
+    </html>
