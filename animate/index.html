@@ -80,6 +80,17 @@
         #saveGifButton:hover {
             background-color: #666;
         }
+
+        /* New file input styling */
+        #fileInput {
+            margin-top: 20px;
+            background-color: #444;
+            color: #aaa;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -90,6 +101,9 @@
     <div class="upload-area" id="dropArea">
         Drag & Drop Image Here or Paste from Clipboard
     </div>
+
+    <!-- File input button -->
+    <input type="file" id="fileInput" accept="image/*">
 
     <!-- Loading spinner -->
     <div class="spinner" id="spinner"></div>
@@ -112,6 +126,7 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const spinner = document.getElementById('spinner');
+        const fileInput = document.getElementById('fileInput');  // New file input element
 
         let framesArray = [];
 
@@ -143,6 +158,14 @@
                     createVideoFromImage(file);
                     break;
                 }
+            }
+        });
+
+        // Handle file input
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                createVideoFromImage(file);
             }
         });
 
