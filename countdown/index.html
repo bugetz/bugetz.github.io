@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Countdown Timer</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .countdown {
+            font-size: 10vw;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8),
+                         -2px -2px 5px rgba(0, 0, 0, 0.8),
+                         4px 4px 10px rgba(0, 0, 0, 0.6),
+                         -4px -4px 10px rgba(0, 0, 0, 0.6);
+            transform-style: preserve-3d;
+            animation: moveSideToSide 4s infinite ease-in-out;
+            transform-origin: center;
+            perspective: 600px;
+            display: none;
+        }
+
+        @keyframes moveSideToSide {
+            0%, 100% {
+                transform: rotateY(20deg) translateX(-10px);
+            }
+            50% {
+                transform: rotateY(-20deg) translateX(10px);
+            }
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .input-container input {
+            width: 100px;
+            padding: 5px;
+            font-size: 16px;
+            text-align: center;
+            margin: 5px;
+        }
+
+        .input-container label {
+            margin: 5px;
+        }
+
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: darkgrey;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .input-container button:hover {
+            background-color: grey;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-container">
+        <label for="hours">Hours:</label>
+        <input type="number" id="hours" min="0" placeholder="0">
+        <label for="minutes">Minutes:</label>
+        <input type="number" id="minutes" min="0" placeholder="0">
+        <label for="seconds">Seconds:</label>
+        <input type="number" id="seconds" min="0" placeholder="0">
+        <label for="color">Countdown Color:</label>
+        <input type="color" id="color" value="#ff0000">
+        <button id="startButton">Start Countdown</button>
+    </div>
+    <div id="countdown" class="countdown">0:00:00</div>
+
+    <script>
+        const countdownElement = document.getElementById('countdown');
+        const startButton = document.getElementById('startButton');
+        const hoursInput = document.getElementById('hours');
+        const minutesInput = document.getElementById('minutes');
+        const secondsInput = document.getElementById('seconds');
+        const colorInput = document.getElementById('color');
+        let countdownInterval;
+
+        startButton.addEventListener('click', () => {
+            // Get input values
+            const hours = parseInt(hoursInput.value) || 0;
+            const minutes = parseInt(minutesInput.value) || 0;
+            const seconds = parseInt(secondsInput.value) || 0;
+
+            // Calculate total time in seconds
+            let timeRemaining = hours * 3600 + minutes * 60 + seconds;
+
+            if (timeRemaining <= 0) {
+                alert('Please enter a valid time.');
+                return;
+            }
+
+            // Set the countdown color
+            const selectedColor = colorInput.value;
+            countdownElement.style.color = selectedColor;
+
+            // Hide inputs and show countdown
+            document.querySelector('.input-container').style.display = 'none';
+            countdownElement.style.display = 'block';
+
+            function updateCountdown() {
+                const hrs = Math.floor(timeRemaining / 3600);
+                const mins = Math.floor((timeRemaining % 3600) / 60);
+                const secs = timeRemaining % 60;
+                countdownElement.textContent = `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                if (timeRemaining > 0) {
+                    timeRemaining--;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = "Time's Up!";
+                    countdownElement.style.color = 'white';
+                    countdownElement.style.textShadow = '3px 3px 10px rgba(255, 255, 255, 0.8)';
+                }
+            }
+
+            // Start the countdown
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        });
+    </script>
+</body>
+</html>
