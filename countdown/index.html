@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Timer</title>
+    <title>Countdown</title>
     <style>
         body {
             background-color: black;
@@ -15,30 +15,7 @@
             margin: 0;
             overflow: hidden;
             color: white;
-        }
-
-        .countdown {
-            font-size: 10vw;
             font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8),
-                         -2px -2px 5px rgba(0, 0, 0, 0.8),
-                         4px 4px 10px rgba(0, 0, 0, 0.6),
-                         -4px -4px 10px rgba(0, 0, 0, 0.6);
-            transform-style: preserve-3d;
-            animation: moveSideToSide 4s infinite ease-in-out;
-            transform-origin: center;
-            perspective: 600px;
-            display: none;
-        }
-
-        @keyframes moveSideToSide {
-            0%, 100% {
-                transform: rotateY(20deg) translateX(-10px);
-            }
-            50% {
-                transform: rotateY(-20deg) translateX(10px);
-            }
         }
 
         .input-container {
@@ -47,90 +24,92 @@
             align-items: center;
         }
 
-        .input-container input {
-            width: 100px;
-            padding: 5px;
-            font-size: 16px;
-            text-align: center;
+        .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 5px;
         }
 
-        .input-container label {
+        .input-row input, .input-row button, .input-row label {
             margin: 5px;
         }
 
-        .input-container button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
+        .input-row input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        .input-row input[type="color"] {
+            margin-left: 5px;
+        }
+
+        #countdown {
+            font-size: 10vw;
+            font-weight: bold;
+            display: none;
+            transform: scale(1);
+            transition: transform 1s linear;
+        }
+
+        #hideButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+            display: none;
+            opacity: 0;
             background-color: darkgrey;
+            color: black;
             border: none;
             border-radius: 5px;
+            padding: 10px 20px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: opacity 0.3s ease;
         }
 
-        .input-container button:hover {
-            background-color: grey;
+        #hideButton:hover {
+            opacity: 1;
         }
 
-        .options {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .options label {
-            margin: 5px;
-        }
-
-        .upload-container {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .upload-container input {
-            margin: 5px;
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div class="options">
-        <label><input type="checkbox" id="stopwatchTick" checked> Stopwatch</label>
-        <label><input type="checkbox" id="countdownSound" checked> Countdown Sounds</label>
-        <label><input type="checkbox" id="noAnimation"> No Animation</label>
-    </div>
-
     <div class="input-container">
-        <label for="hours">Hours:</label>
-        <input type="number" id="hours" min="0" placeholder="0">
-        <label for="minutes">Minutes:</label>
-        <input type="number" id="minutes" min="0" placeholder="0">
-        <label for="seconds">Seconds:</label>
-        <input type="number" id="seconds" min="0" placeholder="0">
-        <label for="color">Countdown Color:</label>
-        <input type="color" id="color" value="#ff0000">
+        <div class="input-row">
+            <label for="hours">Hours:</label>
+            <input type="number" id="hours" min="0" placeholder="0">
+            <label for="minutes">Minutes:</label>
+            <input type="number" id="minutes" min="0" placeholder="0">
+            <label for="seconds">Seconds:</label>
+            <input type="number" id="seconds" min="0" placeholder="0">
+        </div>
+        <div class="input-row">
+            <label for="color">Color:</label>
+            <input type="color" id="color" value="#ff0000">
+        </div>
+        <div class="input-row">
+            <label>Upload SFX:</label>
+            <input type="checkbox" id="autoSFX" checked> Auto
+            <label>Upload Music:</label>
+            <input type="checkbox" id="autoMusic" checked> Auto
+        </div>
+        <div class="input-row">
+            <label>Stopwatch Tick:</label>
+            <input type="checkbox" id="tickSound">
+            <label>Animation:</label>
+            <input type="checkbox" id="animation">
+        </div>
         <button id="startButton">Start Countdown</button>
     </div>
 
-    <div id="countdown" class="countdown">0:00:00</div>
+    <div id="countdown">0:00:00</div>
+    <button id="hideButton">Hide Buttons</button>
 
-    <div class="upload-container">
-        <label>Upload SFX:</label>
-        <input type="file" id="sfxUpload" accept="audio/*">
-        <label>Upload Music:</label>
-        <input type="file" id="musicUpload" accept="audio/*">
-    </div>
-
-    <audio id="backgroundMusic" loop autoplay>
-        <source "https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+    <audio id="bgMusic" src="https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3" loop></audio>
 
     <script>
         const countdownElement = document.getElementById('countdown');
@@ -139,56 +118,39 @@
         const minutesInput = document.getElementById('minutes');
         const secondsInput = document.getElementById('seconds');
         const colorInput = document.getElementById('color');
-        const noAnimationCheckbox = document.getElementById('noAnimation');
-        const backgroundMusic = document.getElementById('backgroundMusic');
-        const sfxUpload = document.getElementById('sfxUpload');
-        const musicUpload = document.getElementById('musicUpload');
+        const hideButton = document.getElementById('hideButton');
+        const bgMusic = document.getElementById('bgMusic');
+        const tickSound = document.getElementById('tickSound');
+        const animation = document.getElementById('animation');
+        const autoSFX = document.getElementById('autoSFX');
+        const autoMusic = document.getElementById('autoMusic');
+        const inputContainer = document.querySelector('.input-container');
         let countdownInterval;
-
-        // Disable animation if "No Animation" is checked
-        noAnimationCheckbox.addEventListener('change', () => {
-            if (noAnimationCheckbox.checked) {
-                countdownElement.style.animation = 'none';
-            } else {
-                countdownElement.style.animation = '';
-            }
-        });
-
-        // Handle music upload
-        musicUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                backgroundMusic.src = url;
-                backgroundMusic.play();
-            }
-        });
-
-        // Handle countdown SFX upload
-        sfxUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                const sfx = new Audio(url);
-                sfx.play();
-            }
-        });
 
         startButton.addEventListener('click', () => {
             const hours = parseInt(hoursInput.value) || 0;
             const minutes = parseInt(minutesInput.value) || 0;
             const seconds = parseInt(secondsInput.value) || 0;
-            let timeRemaining = hours * 3600 + minutes * 60 + seconds;
 
+            let timeRemaining = hours * 3600 + minutes * 60 + seconds;
             if (timeRemaining <= 0) {
                 alert('Please enter a valid time.');
                 return;
             }
 
-            const selectedColor = colorInput.value;
-            countdownElement.style.color = selectedColor;
-            document.querySelector('.input-container').style.display = 'none';
+            countdownElement.style.color = colorInput.value;
             countdownElement.style.display = 'block';
+            inputContainer.classList.add('fade-out');
+            setTimeout(() => inputContainer.style.display = 'none', 300);
+
+            hideButton.style.display = 'block';
+
+            // Start playing music
+            if (autoMusic.checked) {
+                bgMusic.play();
+            }
+
+            let zoomLevel = 1;
 
             function updateCountdown() {
                 const hrs = Math.floor(timeRemaining / 3600);
@@ -196,17 +158,46 @@
                 const secs = timeRemaining % 60;
                 countdownElement.textContent = `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
+                if (animation.checked && timeRemaining < 30) {
+                    zoomLevel = 1 + (30 - timeRemaining) * 0.01;
+                    countdownElement.style.transform = `scale(${zoomLevel})`;
+                }
+
+                if (tickSound.checked) {
+                    const tick = new Audio('https://freesound.org/data/previews/541/541305_11919003-lq.mp3');
+                    tick.play();
+                }
+
                 if (timeRemaining > 0) {
                     timeRemaining--;
                 } else {
                     clearInterval(countdownInterval);
                     countdownElement.textContent = "Time's Up!";
+                    countdownElement.style.transform = 'scale(1)';
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
                 }
             }
 
+            // Start the countdown
             updateCountdown();
             countdownInterval = setInterval(updateCountdown, 1000);
         });
+
+        hideButton.addEventListener('click', () => {
+            countdownElement.style.opacity = 1;
+            inputContainer.style.display = 'none';
+            hideButton.style.display = 'none';
+        });
+
+        // Show hideButton when mouse hovers near top-right corner
+        document.body.addEventListener('mousemove', (e) => {
+            if (e.clientX > window.innerWidth - 100 && e.clientY < 100) {
+                hideButton.style.opacity = 1;
+            } else {
+                hideButton.style.opacity = 0;
+            }
+        });
     </script>
 </body>
-    </html>
+                </html>
