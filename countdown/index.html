@@ -5,42 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Countdown</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: black;
+            color: white;
+            font-family: 'Arial', sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            color: white;
-            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
         }
 
         .input-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         .input-row {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .input-row label, .input-row input {
             margin: 5px;
         }
 
-        .input-row input, .input-row button, .input-row label {
-            margin: 5px;
+        .input-row input[type="number"],
+        .input-row input[type="color"],
+        .input-row button {
+            padding: 5px;
+            width: 100%;
         }
 
         .input-row input[type="checkbox"] {
             margin-left: 10px;
         }
 
-        .input-row input[type="color"] {
-            margin-left: 5px;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: black;
+            background-color: darkgrey;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: grey;
         }
 
         #countdown {
@@ -53,9 +83,8 @@
 
         #hideButton {
             position: absolute;
-            top: 0;
-            right: 0;
-            margin: 10px;
+            top: 10px;
+            right: 10px;
             display: none;
             opacity: 0;
             background-color: darkgrey;
@@ -75,39 +104,47 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            #countdown {
+                font-size: 15vw;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="input-container">
-        <div class="input-row">
-            <label for="hours">Hours:</label>
-            <input type="number" id="hours" min="0" placeholder="0">
-            <label for="minutes">Minutes:</label>
-            <input type="number" id="minutes" min="0" placeholder="0">
-            <label for="seconds">Seconds:</label>
-            <input type="number" id="seconds" min="0" placeholder="0">
+    <div class="container">
+        <div class="input-container">
+            <div class="input-row">
+                <label for="hours">Hours:</label>
+                <input type="number" id="hours" min="0" placeholder="0">
+                <label for="minutes">Minutes:</label>
+                <input type="number" id="minutes" min="0" placeholder="0">
+                <label for="seconds">Seconds:</label>
+                <input type="number" id="seconds" min="0" placeholder="0">
+            </div>
+            <div class="input-row">
+                <label for="color">Color:</label>
+                <input type="color" id="color" value="#ff0000">
+            </div>
+            <div class="input-row">
+                <label>Stopwatch Tick:</label>
+                <input type="checkbox" id="tickSound">
+                <label>Animation:</label>
+                <input type="checkbox" id="animation">
+            </div>
+            <button id="startButton">Start Countdown</button>
         </div>
-        <div class="input-row">
-            <label for="color">Color:</label>
-            <input type="color" id="color" value="#ff0000">
-        </div>
-        <div class="input-row">
-            <label>Upload SFX:</label>
-            <input type="checkbox" id="autoSFX" checked> Auto
-            <label>Upload Music:</label>
-            <input type="checkbox" id="autoMusic" checked> Auto
-        </div>
-        <div class="input-row">
-            <label>Stopwatch Tick:</label>
-            <input type="checkbox" id="tickSound">
-            <label>Animation:</label>
-            <input type="checkbox" id="animation">
-        </div>
-        <button id="startButton">Start Countdown</button>
-    </div>
 
-    <div id="countdown">0:00:00</div>
-    <button id="hideButton">Hide Buttons</button>
+        <div id="countdown">0:00:00</div>
+        <button id="hideButton">Hide Buttons</button>
+    </div>
 
     <audio id="bgMusic" src="https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3" loop></audio>
 
@@ -122,8 +159,6 @@
         const bgMusic = document.getElementById('bgMusic');
         const tickSound = document.getElementById('tickSound');
         const animation = document.getElementById('animation');
-        const autoSFX = document.getElementById('autoSFX');
-        const autoMusic = document.getElementById('autoMusic');
         const inputContainer = document.querySelector('.input-container');
         let countdownInterval;
 
@@ -146,9 +181,7 @@
             hideButton.style.display = 'block';
 
             // Start playing music
-            if (autoMusic.checked) {
-                bgMusic.play();
-            }
+            bgMusic.play();
 
             let zoomLevel = 1;
 
@@ -190,7 +223,6 @@
             hideButton.style.display = 'none';
         });
 
-        // Show hideButton when mouse hovers near top-right corner
         document.body.addEventListener('mousemove', (e) => {
             if (e.clientX > window.innerWidth - 100 && e.clientY < 100) {
                 hideButton.style.opacity = 1;
@@ -200,4 +232,4 @@
         });
     </script>
 </body>
-                </html>
+    </html>
