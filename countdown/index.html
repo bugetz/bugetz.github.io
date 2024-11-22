@@ -13,126 +13,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Countdown</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #1a1a1a, #000000);
+            background: linear-gradient(to bottom, #000000, #1c1c1c);
             color: white;
             font-family: 'Arial', sans-serif;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            height: 100vh;
             margin: 0;
             overflow: hidden;
         }
 
-        .countdown-container {
-            text-align: center;
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        .countdown {
-            font-size: 10vw;
-            font-weight: bold;
-            margin: 0;
-            color: #ff4444;
-            text-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
-            transition: transform 0.5s ease, color 0.3s ease;
-        }
-
-        .controls {
+        .input-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
             gap: 15px;
-            margin-top: 30px;
-        }
-
-        .controls div {
             text-align: center;
         }
 
-        .controls input[type="number"], .controls input[type="color"], .controls button {
+        input, button {
+            font-size: 18px;
             padding: 10px;
-            font-size: 16px;
-            border-radius: 8px;
             border: none;
+            border-radius: 8px;
             outline: none;
         }
 
-        .controls button {
-            background-color: #444444;
+        input[type="number"] {
+            width: 120px;
+            text-align: center;
+            background: #262626;
+            color: white;
+            border: 2px solid #444;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #444;
             color: white;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        #countdown {
+            font-size: 12vw;
             font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .controls button:hover {
-            background-color: #666666;
-        }
-
-        .checkboxes {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .checkboxes label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nice-message {
-            font-size: 2vw;
-            color: white;
-            margin-top: 10px;
-            animation: fadeIn 1s ease-in-out;
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.6);
+            transform-style: preserve-3d;
+            transform-origin: center;
+            perspective: 600px;
+            animation: zoomIn 1s ease-in-out infinite;
             display: none;
         }
 
-        .audio-controls {
-            display: flex;
-            gap: 20px;
+        @keyframes zoomIn {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        #nice {
+            font-size: 2rem;
+            color: white;
             margin-top: 20px;
+            opacity: 0;
+            animation: fadeInOut 2s ease-in-out;
         }
 
-        .audio-controls label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .countdown {
-                font-size: 15vw;
-            }
-
-            .controls input[type="number"], 
-            .controls input[type="color"], 
-            .controls button {
-                font-size: 14px;
-                padding: 8px;
-            }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="countdown-container">
-        <div class="countdown" id="countdown">0:00:00</div>
-        <div class="nice-message" id="niceMessage">Nice</div>
-    </div>
-    <div class="controls">
+    <div class="input-container" id="ui">
         <div>
             <label for="hours">Hours:</label>
             <input type="number" id="hours" min="0" placeholder="0">
@@ -146,33 +123,15 @@
             <input type="number" id="seconds" min="0" placeholder="0">
         </div>
         <div>
-            <label for="color">Color:</label>
-            <input type="color" id="color" value="#ff4444">
+            <label for="color">Countdown Color:</label>
+            <input type="color" id="color" value="#ff0000">
         </div>
-        <button id="startButton">Start</button>
+        <button id="startButton">Start Countdown</button>
     </div>
-    <div class="checkboxes">
-        <label>
-            <input type="checkbox" id="stopwatchTick"> Stopwatch Tick
-        </label>
-        <label>
-            <input type="checkbox" id="animationTick"> Animation Tick
-        </label>
-    </div>
-    <div class="audio-controls">
-        <label>
-            Upload Music:
-            <input type="file" id="uploadMusic">
-            <input type="checkbox" id="autoMusic" checked> Auto
-        </label>
-        <label>
-            Upload SFX:
-            <input type="file" id="uploadSFX">
-            <input type="checkbox" id="autoSFX" checked> Auto
-        </label>
-    </div>
+    <div id="countdown">0:00:00</div>
+    <div id="nice">Nice</div>
 
-    <audio id="backgroundMusic" src="https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3"></audio>
+    <audio id="music" src="https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3" loop></audio>
 
     <script>
         const countdownElement = document.getElementById('countdown');
@@ -181,9 +140,9 @@
         const minutesInput = document.getElementById('minutes');
         const secondsInput = document.getElementById('seconds');
         const colorInput = document.getElementById('color');
-        const niceMessage = document.getElementById('niceMessage');
-        const backgroundMusic = document.getElementById('backgroundMusic');
-
+        const ui = document.getElementById('ui');
+        const nice = document.getElementById('nice');
+        const music = document.getElementById('music');
         let countdownInterval;
 
         startButton.addEventListener('click', () => {
@@ -193,41 +152,38 @@
             let timeRemaining = hours * 3600 + minutes * 60 + seconds;
 
             if (timeRemaining <= 0) {
-                alert('Enter a valid time.');
+                alert('Please enter a valid time.');
                 return;
             }
 
             countdownElement.style.color = colorInput.value;
-            backgroundMusic.currentTime = 0;
-            backgroundMusic.play();
-
-            if (minutes === 69 || hours === 69) {
-                niceMessage.style.display = 'block';
-            } else {
-                niceMessage.style.display = 'none';
-            }
+            ui.style.display = 'none';
+            countdownElement.style.display = 'block';
+            music.play();
 
             function updateCountdown() {
                 const hrs = Math.floor(timeRemaining / 3600);
                 const mins = Math.floor((timeRemaining % 3600) / 60);
                 const secs = timeRemaining % 60;
-
                 countdownElement.textContent = `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-                if (timeRemaining <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownElement.textContent = "Time's Up!";
+                if (hrs === 69 || mins === 69 || secs === 69) {
+                    nice.style.opacity = 1;
                 } else {
-                    timeRemaining--;
+                    nice.style.opacity = 0;
                 }
 
-                if (mins !== 69 && hrs !== 69) {
-                    niceMessage.style.display = 'none';
+                if (timeRemaining > 0) {
+                    timeRemaining--;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = "Time's Up!";
                 }
             }
 
+            updateCountdown();
             countdownInterval = setInterval(updateCountdown, 1000);
         });
     </script>
 </body>
-</html>          
+</html>
