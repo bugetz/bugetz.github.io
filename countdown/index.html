@@ -72,11 +72,40 @@
             background-color: grey;
         }
 
+        .checkboxes {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .checkboxes div {
+            margin: 0 10px;
+        }
+
         .nice-message {
             font-size: 2vw;
             color: white;
             margin-top: 10px;
             display: none;
+        }
+
+        .hide-buttons {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .hide-buttons:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -102,8 +131,23 @@
             <button id="startButton">Start Timer</button>
         </div>
     </div>
+    <div class="checkboxes">
+        <div>
+            <label><input type="checkbox" id="stopwatchTick"> Stopwatch Tick</label>
+        </div>
+        <div>
+            <label><input type="checkbox" id="animationTick"> Animation</label>
+        </div>
+    </div>
+    <div class="audio-controls">
+        <label>Upload Music <input type="file" id="uploadMusic"></label>
+        <label>Auto <input type="checkbox" id="autoMusic" checked></label>
+        <label>Upload SFX <input type="file" id="uploadSFX"></label>
+        <label>Auto <input type="checkbox" id="autoSFX" checked></label>
+    </div>
     <div id="countdown" class="countdown">00:00:00</div>
     <div id="niceMessage" class="nice-message">Nice</div>
+    <button id="hideButton" class="hide-buttons">Hide Buttons</button>
 
     <script>
         const countdownElement = document.getElementById('countdown');
@@ -113,9 +157,15 @@
         const secondsInput = document.getElementById('seconds');
         const colorInput = document.getElementById('color');
         const niceMessage = document.getElementById('niceMessage');
+        const hideButton = document.getElementById('hideButton');
+        const controls = document.querySelector('.controls');
+        const checkboxes = document.querySelector('.checkboxes');
+        const audioControls = document.querySelector('.audio-controls');
+        const musicPlayer = new Audio("https://bugetz.github.io/dQsG5Q5W0h2i.128.mp3");
 
         let countdownInterval;
         let niceMessageShown = false;
+        let hideEnabled = false;
 
         function showNiceMessageOnce(timeString) {
             if (!niceMessageShown && timeString.includes('69')) {
@@ -137,6 +187,14 @@
             showNiceMessageOnce(timeString);
         }
 
+        function toggleUI(show) {
+            const display = show ? 'flex' : 'none';
+            controls.style.display = display;
+            checkboxes.style.display = display;
+            audioControls.style.display = display;
+            hideButton.style.display = show ? 'none' : 'block';
+        }
+
         startButton.addEventListener('click', () => {
             const hours = parseInt(hoursInput.value) || 0;
             const minutes = parseInt(minutesInput.value) || 0;
@@ -152,8 +210,7 @@
             const selectedColor = colorInput.value;
             countdownElement.style.color = selectedColor;
 
-            document.querySelector('.controls').style.display = 'none';
-            countdownElement.style.display = 'block';
+            if (document.getElementById('autoMusic').checked) musicPlayer.play();
 
             updateCountdownDisplay(timeRemaining);
 
@@ -166,7 +223,19 @@
                     countdownElement.textContent = "Time's Up!";
                 }
             }, 1000);
+
+            toggleUI(false);
+        });
+
+        hideButton.addEventListener('click', () => toggleUI(true));
+
+        document.body.addEventListener('mousemove', () => {
+            if (!hideEnabled) return;
+            hideButton.style.display = 'block';
+            setTimeout(() => {
+                hideButton.style.display = 'none';
+            }, 3000);
         });
     </script>
 </body>
-</html>
+    </html>
