@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenor GIF Search</title>
+    <style>
+        /* CSS Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2e2e2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        #gifContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .gif {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gif img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gif:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tenor GIF Search</h1>
+        <input type="text" id="searchInput" placeholder="Search for GIFs...">
+        <button id="searchBtn">Search</button>
+        <div id="gifContainer"></div>
+    </div>
+    <script>
+        // JavaScript functionality
+        const apiKey = "AIzaSyDSN8v9iucxGjvXBR6I7-e2WqCtA9ZhWCI";
+        const searchBtn = document.getElementById("searchBtn");
+        const searchInput = document.getElementById("searchInput");
+        const gifContainer = document.getElementById("gifContainer");
+
+        // Fetch and display GIFs
+        async function fetchGIFs(query) {
+            const url = `https://tenor.googleapis.com/v2/search?q=${query}&key=${apiKey}&limit=12`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                displayGIFs(data.results);
+            } catch (error) {
+                console.error("Error fetching GIFs:", error);
+            }
+        }
+
+        // Display GIFs on the page
+        function displayGIFs(gifs) {
+            gifContainer.innerHTML = ""; // Clear previous results
+            gifs.forEach(gif => {
+                const gifDiv = document.createElement("div");
+                gifDiv.classList.add("gif");
+                gifDiv.innerHTML = `<img src="${gif.media_formats.gif.url}" alt="GIF">`;
+                gifContainer.appendChild(gifDiv);
+            });
+        }
+
+        // Event listener for search
+        searchBtn.addEventListener("click", () => {
+            const query = searchInput.value.trim();
+            if (query) {
+                fetchGIFs(query);
+            }
+        });
+
+        // Trigger search on Enter key
+        searchInput.addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                searchBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
