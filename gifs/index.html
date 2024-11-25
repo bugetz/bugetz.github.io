@@ -3,26 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenor GIF Search</title>
+    <title>Popular Tenor GIFs</title>
     <style>
         /* CSS Styling */
         body {
             margin: 0;
             padding: 0;
-            background-color: #2e2e2e;
+            background: linear-gradient(135deg, #1c1c1c, #3c3c3c);
             color: #fff;
             font-family: Arial, sans-serif;
             text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
         }
 
         h1 {
             margin-bottom: 20px;
+            font-size: 2rem;
         }
 
         input[type="text"] {
@@ -77,50 +82,86 @@
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
+
+        .loading {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #444;
+            border-top: 5px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Tenor GIF Search</h1>
+        <h1>Popular Tenor GIFs</h1>
         <input type="text" id="searchInput" placeholder="Search for GIFs...">
         <button id="searchBtn">Search</button>
         <div id="gifContainer"></div>
+        <div id="loading" class="loading" style="display: none;"></div>
     </div>
     <script>
-        // JavaScript functionality
         const apiKey = "AIzaSyDSN8v9iucxGjvXBR6I7-e2WqCtA9ZhWCI";
         const searchBtn = document.getElementById("searchBtn");
         const searchInput = document.getElementById("searchInput");
         const gifContainer = document.getElementById("gifContainer");
+        const loading = document.getElementById("loading");
 
-        // Fetch and display GIFs
-        async function fetchGIFs(query) {
-            const url = `https://tenor.googleapis.com/v2/search?q=${query}&key=${apiKey}&limit=12`;
+        let nextPos = ""; // Keeps track of the next position for pagination
+        let isLoading = false; // Prevents multiple concurrent fetches
+        let query = ""; // Current search query
+
+        // Fetch GIFs
+        async function fetchGIFs() {
+            if (isLoading) return;
+            isLoading = true;
+            loading.style.display = "block";
+
+            const url = query
+                ? `https://tenor.googleapis.com/v2/search?q=${query}&key=${apiKey}&limit=12&pos=${nextPos}`
+                : `https://tenor.googleapis.com/v2/featured?key=${apiKey}&limit=12&pos=${nextPos}`;
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                nextPos = data.next; // Update next position for pagination
                 displayGIFs(data.results);
             } catch (error) {
                 console.error("Error fetching GIFs:", error);
+            } finally {
+                isLoading = false;
+                loading.style.display = "none";
             }
         }
 
         // Display GIFs on the page
         function displayGIFs(gifs) {
-            gifContainer.innerHTML = ""; // Clear previous results
             gifs.forEach(gif => {
                 const gifDiv = document.createElement("div");
                 gifDiv.classList.add("gif");
-                gifDiv.innerHTML = `<img src="${gif.media_formats.gif.url}" alt="GIF">`;
+                gifDiv.innerHTML = `<a href="${gif.itemurl}" target="_blank"><img src="${gif.media_formats.gif.url}" alt="GIF"></a>`;
                 gifContainer.appendChild(gifDiv);
             });
         }
 
         // Event listener for search
         searchBtn.addEventListener("click", () => {
-            const query = searchInput.value.trim();
+            query = searchInput.value.trim();
+            nextPos = ""; // Reset pagination
+            gifContainer.innerHTML = ""; // Clear previous results
             if (query) {
-                fetchGIFs(query);
+                fetchGIFs();
             }
         });
 
@@ -130,6 +171,19 @@
                 searchBtn.click();
             }
         });
+
+        // Infinite scrolling
+        window.addEventListener("scroll", () => {
+            if (
+                window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
+                !isLoading
+            ) {
+                fetchGIFs();
+            }
+        });
+
+        // Initial fetch for trending GIFs
+        fetchGIFs();
     </script>
 </body>
 </html>
