@@ -65,7 +65,6 @@
         .gif {
             position: relative;
             width: 150px;
-            height: 150px;
             overflow: hidden;
             border-radius: 8px;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -73,7 +72,7 @@
 
         .gif img {
             width: 100%;
-            height: 100%;
+            height: 150px;
             object-fit: cover;
             display: block;
         }
@@ -81,6 +80,13 @@
         .gif:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .gif p {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin: 5px 0 0;
+            text-align: center;
         }
 
         .loading {
@@ -150,7 +156,13 @@
             gifs.forEach(gif => {
                 const gifDiv = document.createElement("div");
                 gifDiv.classList.add("gif");
-                gifDiv.innerHTML = `<a href="${gif.itemurl}" target="_blank"><img src="${gif.media_formats.gif.url}" alt="GIF"></a>`;
+                const shareCount = gif.share_count || 0; // Fallback to 0 if share_count is not provided
+                gifDiv.innerHTML = `
+                    <a href="${gif.itemurl}" target="_blank">
+                        <img src="${gif.media_formats.gif.url}" alt="GIF">
+                    </a>
+                    <p>${shareCount} Shares</p>
+                `;
                 gifContainer.appendChild(gifDiv);
             });
         }
