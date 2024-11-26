@@ -1,1 +1,42 @@
-dh=0d4657dd75605be85a1679f6c647d5c06e9e2a4c
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP and City Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .info {
+            font-size: 20px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visitor Information</h1>
+    <div class="info">
+        <p><strong>IP Address:</strong> <span id="ip"></span></p>
+        <p><strong>City:</strong> <span id="city"></span></p>
+    </div>
+
+    <script>
+        // Fetch data from the ipinfo.io API
+        fetch('https://ipinfo.io?token=e7632a7b98c68e')
+            .then(response => response.json())
+            .then(data => {
+                // Extract the IP and city from the response and update the HTML
+                document.getElementById('ip').textContent = data.ip;
+                document.getElementById('city').textContent = data.city;
+            })
+            .catch(error => {
+                console.error('Error fetching IP information:', error);
+                document.getElementById('ip').textContent = 'Unable to fetch IP';
+                document.getElementById('city').textContent = 'Unable to fetch city';
+            });
+    </script>
+</body>
+</html>
