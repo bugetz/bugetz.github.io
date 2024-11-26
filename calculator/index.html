@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculator</title>
+  <title>Cool Animated Calculator</title>
   
-    <!-- Link to the favicon -->
+<!-- Link to the favicon -->
     <link rel="icon" href="https://icons.veryicon.com/png/o/miscellaneous/iview30-ios-style/ios-calculator-4.png" type="image/png">
 
 <style>
@@ -105,7 +105,7 @@
 <body>
   <div class="calculator">
     <input type="text" id="display" disabled>
-    <button class="clear" onclick="clearDisplay()">Clear</button>
+    <button class="clear" onclick="clearDisplay()">C</button>
     <button onclick="appendToDisplay('7')">7</button>
     <button onclick="appendToDisplay('8')">8</button>
     <button onclick="appendToDisplay('9')">9</button>
@@ -124,16 +124,32 @@
     <button class="operator" onclick="appendToDisplay('+')">+</button>
   </div>
 
+  <!-- Add audio element -->
+  <audio id="click-sound" src="https://bugetz.github.io/mouse-click-sound%20(mp3cut.net).mp3" preload="auto"></audio>
+
   <script>
+    // Play the mouse click sound
+    function playClickSound() {
+      const sound = document.getElementById("click-sound");
+      sound.currentTime = 0;  // Rewind to the start
+      sound.play();
+    }
+
+    // Function to append value to the display
     function appendToDisplay(value) {
+      playClickSound(); // Play sound when button is clicked
       document.getElementById('display').value += value;
     }
 
+    // Function to clear the display
     function clearDisplay() {
+      playClickSound(); // Play sound when C is clicked
       document.getElementById('display').value = '';
     }
 
+    // Function to calculate the result
     function calculateResult() {
+      playClickSound(); // Play sound when = is clicked
       const expression = document.getElementById('display').value;
       try {
         document.getElementById('display').value = eval(expression);
