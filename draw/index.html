@@ -22,6 +22,9 @@
         .color-picker, .brush-size {
             margin-right: 20px;
         }
+        button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -37,20 +40,24 @@
         <input type="number" id="brushSize" value="5" min="1" max="50">
         
         <button onclick="clearCanvas()">Clear</button>
+        <button onclick="downloadCanvas()">Download</button>
     </div>
     
     <!-- Canvas for drawing -->
     <canvas id="drawingCanvas" width="600" height="400"></canvas>
     
+    <audio id="clickSound" src="https://bugetz.github.io/mouse-click-sound%20(mp3cut.net).mp3" preload="auto"></audio>
+    
     <script>
         // Getting canvas and context
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
+        const clickSound = document.getElementById('clickSound');
         
         let drawing = false;
         let color = document.getElementById('colorPicker').value;
         let brushSize = document.getElementById('brushSize').value;
-        
+
         // Mouse event listeners to draw
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
@@ -69,6 +76,7 @@
         function startDrawing(event) {
             drawing = true;
             draw(event);
+            clickSound.play(); // Play the click sound when drawing starts
         }
         
         function draw(event) {
@@ -91,6 +99,14 @@
         
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function downloadCanvas() {
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'drawing.png';
+            link.click();
         }
     </script>
 
