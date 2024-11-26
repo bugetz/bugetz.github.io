@@ -9,25 +9,20 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #1c1c1c, #3c3c3c);
+            background-color: #2e2e2e;
             color: #fff;
             font-family: Arial, sans-serif;
             text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .container {
             max-width: 800px;
-            margin: 20px auto;
+            margin: 0 auto;
             padding: 20px;
         }
 
         h1 {
             margin-bottom: 20px;
-            font-size: 2rem;
         }
 
         input[type="text"] {
@@ -65,6 +60,7 @@
         .gif {
             position: relative;
             width: 150px;
+            height: 150px;
             overflow: hidden;
             border-radius: 8px;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -72,7 +68,7 @@
 
         .gif img {
             width: 100%;
-            height: 150px;
+            height: 100%;
             object-fit: cover;
             display: block;
         }
@@ -81,87 +77,56 @@
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
-
-        .gif p {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin: 5px 0 0;
-            text-align: center;
-        }
-
-        .loading {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #444;
-            border-top: 5px solid #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Popular Tenor GIFs</h1>
+        <h1>Tenor GIF Search</h1>
         <input type="text" id="searchInput" placeholder="Search for GIFs...">
         <button id="searchBtn">Search</button>
         <div id="gifContainer"></div>
-        <div id="loading" class="loading" style="display: none;"></div>
     </div>
     <script>
+        // JavaScript functionality
         const apiKey = "AIzaSyDSN8v9iucxGjvXBR6I7-e2WqCtA9ZhWCI";
         const searchBtn = document.getElementById("searchBtn");
         const searchInput = document.getElementById("searchInput");
         const gifContainer = document.getElementById("gifContainer");
-        const loading = document.getElementById("loading");
 
-        let nextPos = ""; // Keeps track of the next position for pagination
-        let isLoading = false; // Prevents multiple concurrent fetches
-        let query = ""; // Current search query
+        let nextPos = ""; // For pagination
+        let isLoading = false; // Prevent duplicate fetches
+        let query = ""; // Current search term
 
-        // Fetch GIFs
+        // Fetch and display GIFs
         async function fetchGIFs() {
             if (isLoading) return;
             isLoading = true;
-            loading.style.display = "block";
 
             const url = query
                 ? `https://tenor.googleapis.com/v2/search?q=${query}&key=${apiKey}&limit=12&pos=${nextPos}`
                 : `https://tenor.googleapis.com/v2/featured?key=${apiKey}&limit=12&pos=${nextPos}`;
-            
+
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                nextPos = data.next; // Update next position for pagination
+                nextPos = data.next; // Update pagination token
                 displayGIFs(data.results);
             } catch (error) {
                 console.error("Error fetching GIFs:", error);
             } finally {
                 isLoading = false;
-                loading.style.display = "none";
             }
         }
 
         // Display GIFs on the page
         function displayGIFs(gifs) {
-            gifs.forEach(gif => {
+            gifs.forEach((gif) => {
                 const gifDiv = document.createElement("div");
                 gifDiv.classList.add("gif");
-                const shareCount = gif.share_count || 0; // Fallback to 0 if share_count is not provided
                 gifDiv.innerHTML = `
                     <a href="${gif.itemurl}" target="_blank">
                         <img src="${gif.media_formats.gif.url}" alt="GIF">
                     </a>
-                    <p>${shareCount} Shares</p>
                 `;
                 gifContainer.appendChild(gifDiv);
             });
