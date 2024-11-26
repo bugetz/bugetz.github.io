@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Name Generator</title>
+    <style>
+        body {
+            background-color: #333;
+            color: #eee;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #fff;
+        }
+        .container {
+            background-color: #555;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            margin: 0 auto;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #666;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #444;
+        }
+        .name-output {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .copy-btn {
+            background-color: #666;
+            color: #fff;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .copy-btn.copied {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Random Name Generator</h1>
+    <div class="container">
+        <label for="nameCount">Choose the number of names:</label>
+        <select id="nameCount">
+            <option value="1">1 Name</option>
+            <option value="2">2 Names</option>
+            <option value="3">3 Names</option>
+        </select>
+
+        <button onclick="generateName()">Generate Name</button>
+
+        <div id="nameOutput" class="name-output"></div>
+        <button id="copyBtn" class="copy-btn" onclick="copyName()">Copy</button>
+    </div>
+
+    <script>
+        // Example larger list for demonstration, you can expand this up to 5000 names
+        const firstNames = [
+            "John", "Jane", "Mark", "James", "Michael", "Sarah", "David", "Emily", "Chris", "Jessica", 
+            "Alice", "Robert", "Matthew", "Olivia", "Daniel", "Sophia", "William", "Liam", "Emma", "Jacob",
+            "Mason", "Lucas", "Amelia", "Ethan", "Mia", "Alexander", "Isabella", "Benjamin", "Charlotte", 
+            "Aiden", "Henry", "Harper", "Jack", "Madison", "Leo", "Zoe", "Samuel", "Ava", "Lucas", "Ella"
+        ];
+        const middleNames = [
+            "Paul", "Marie", "Lee", "James", "Ann", "Grace", "Michael", "Elizabeth", "William", "Rose",
+            "Johnathan", "Claire", "Joseph", "Josephine", "Elliot", "Victoria", "Grace", "Matthew", "Louise", "David",
+            "Charles", "Christopher", "Rosemary", "Mae", "Harrison", "Alice", "Henry", "Emily", "Lily", "Daniel"
+        ];
+        const lastNames = [
+            "Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Martinez", "Wilson",
+            "Anderson", "Taylor", "Thomas", "Hernandez", "Moore", "Martin", "Jackson", "Lee", "Perez", "Thompson",
+            "White", "Lopez", "Scott", "Green", "Adams", "Nelson", "Hill", "Carter", "Baker", "Mitchell", "Roberts",
+            "Evans", "Turner", "Collins", "King", "Gomez", "Allen", "Young", "Wright", "Lopez", "Harris"
+        ];
+
+        // Function to select a random element from an array
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Function to generate and display the name based on selected options
+        function generateName() {
+            const nameCount = parseInt(document.getElementById("nameCount").value);
+            let generatedName = "";
+
+            if (nameCount === 1) {
+                generatedName = getRandomElement(firstNames);
+            } else if (nameCount === 2) {
+                generatedName = `${getRandomElement(firstNames)} ${getRandomElement(lastNames)}`;
+            } else if (nameCount === 3) {
+                generatedName = `${getRandomElement(firstNames)} ${getRandomElement(middleNames)} ${getRandomElement(lastNames)}`;
+            }
+
+            // Display the generated name
+            document.getElementById("nameOutput").innerText = generatedName;
+            document.getElementById("copyBtn").classList.remove("copied");  // Reset copy button
+        }
+
+        // Function to copy the generated name to the clipboard
+        function copyName() {
+            const nameText = document.getElementById("nameOutput").innerText;
+            if (nameText) {
+                // Create a temporary input element to copy the name to the clipboard
+                const tempInput = document.createElement('input');
+                tempInput.value = nameText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                // Change button text to "COPIED!" and style it
+                const copyBtn = document.getElementById("copyBtn");
+                copyBtn.innerText = "COPIED!";
+                copyBtn.classList.add("copied");
+
+                // Reset button text after 2 seconds
+                setTimeout(() => {
+                    copyBtn.innerText = "Copy";
+                    copyBtn.classList.remove("copied");
+                }, 2000);
+            }
+        }
+    </script>
+
+</body>
+</html>
