@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #333;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows: repeat(5, 80px);
+      gap: 10px;
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .calculator input {
+      grid-column: span 4;
+      padding: 20px;
+      font-size: 2rem;
+      text-align: right;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .calculator button {
+      background: #555;
+      color: white;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .calculator button:hover {
+      background: #666;
+      transform: scale(1.1);
+    }
+
+    .calculator button:active {
+      transform: scale(1);
+      background: #444;
+    }
+
+    .calculator button:focus {
+      outline: none;
+    }
+
+    .calculator button.operator {
+      background: #f39c12;
+    }
+
+    .calculator button.equal {
+      background: #e74c3c;
+    }
+
+    .calculator button.clear {
+      background: #2ecc71;
+    }
+
+    /* Animation for buttons */
+    @keyframes buttonBounce {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .calculator button:active {
+      animation: buttonBounce 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" disabled>
+    <button class="clear" onclick="clearDisplay()">Clear</button>
+    <button onclick="appendToDisplay('7')">7</button>
+    <button onclick="appendToDisplay('8')">8</button>
+    <button onclick="appendToDisplay('9')">9</button>
+    <button class="operator" onclick="appendToDisplay('/')">/</button>
+    <button onclick="appendToDisplay('4')">4</button>
+    <button onclick="appendToDisplay('5')">5</button>
+    <button onclick="appendToDisplay('6')">6</button>
+    <button class="operator" onclick="appendToDisplay('*')">*</button>
+    <button onclick="appendToDisplay('1')">1</button>
+    <button onclick="appendToDisplay('2')">2</button>
+    <button onclick="appendToDisplay('3')">3</button>
+    <button class="operator" onclick="appendToDisplay('-')">-</button>
+    <button onclick="appendToDisplay('0')">0</button>
+    <button onclick="appendToDisplay('.')">.</button>
+    <button class="equal" onclick="calculateResult()">=</button>
+    <button class="operator" onclick="appendToDisplay('+')">+</button>
+  </div>
+
+  <script>
+    function appendToDisplay(value) {
+      document.getElementById('display').value += value;
+    }
+
+    function clearDisplay() {
+      document.getElementById('display').value = '';
+    }
+
+    function calculateResult() {
+      const expression = document.getElementById('display').value;
+      try {
+        document.getElementById('display').value = eval(expression);
+      } catch (e) {
+        document.getElementById('display').value = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
