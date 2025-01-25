@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Picker from Image</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #imageContainer {
+      position: relative;
+      display: inline-block;
+    }
+    #image {
+      max-width: 100%;
+      max-height: 400px;
+    }
+    #colorDisplay {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    #upload {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Color Picker from Image</h1>
+
+  <div id="imageContainer">
+    <img id="image" src="" alt="Image will be displayed here" />
+  </div>
+
+  <div id="colorDisplay">
+    <p>Selected Color: <span id="colorCode">None</span></p>
+  </div>
+
+  <input type="file" id="upload" accept="image/*" />
+  <br />
+  <textarea id="pasteArea" placeholder="Paste an image here" rows="4" cols="50"></textarea>
+
+  <script>
+    const image = document.getElementById('image');
+    const colorCode = document.getElementById('colorCode');
+    const upload = document.getElementById('upload');
+    const pasteArea = document.getElementById('pasteArea');
+    
+    let imgDataURL = '';
+    
+    // Handle paste event
+    pasteArea.addEventListener('paste', function (e) {
+      const clipboardItems = e.clipboardData.items;
+      for (let i = 0; i < clipboardItems.length; i++) {
+        if (clipboardItems[i].type.indexOf("image") !== -1) {
+          const file = clipboardItems[i].getAsFile();
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            imgDataURL = event.target.result;
+            image.src = imgDataURL;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+
+    // Handle file upload
+    upload.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          imgDataURL = event.target.result;
+          image.src = imgDataURL;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Color picking from the image
+    image.addEventListener('click', function (e) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0, image.width, image.height);
+      
+      const x = e.offsetX;
+      const y = e.offsetY;
+      
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+      colorCode.textContent = hex;
+    });
+
+    // Convert RGB to Hex
+    function rgbToHex(r, g, b) {
+      return '#' + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1).toUpperCase();
+    }
+  </script>
+</body>
+</html>
