@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown to April 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20%;
+            background-color: #222;
+            color: white;
+        }
+        #countdown {
+            font-size: 2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Minecraft Movie releases in..</h1>
+    <div id="countdown"></div>
+
+    <script>
+        function updateCountdown() {
+            const targetDate = new Date(new Date().getFullYear(), 3, 4, 0, 0, 0); // April 4
+            const now = new Date();
+            
+            if (now > targetDate) {
+                targetDate.setFullYear(targetDate.getFullYear() + 1); // Move to next year if past
+            }
+
+            const timeDiff = targetDate - now;
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = 
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+            setTimeout(updateCountdown, 1000);
+        }
+
+        updateCountdown(); // Start the countdown
+    </script>
+</body>
+</html>
