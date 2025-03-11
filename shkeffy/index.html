@@ -1,1 +1,124 @@
-s
+<meta content="Shkeffy Video Lounge" property="og:title" />
+<meta content="Watch Shkeffy Content!" property="og:description" />
+<meta content="https://bugetz.github.io/countdown" property="og:url" />
+<meta content="https://media.discordapp.net/attachments/1342366096992239677/1348750074695385159/Screenshot_20250310-221021_Gallery.png?ex=67d141a4&is=67cff024&hm=c25c305362590c755b2bfe826410066e22c123b7aaad8ceff36124d6e13da0cd&=&format=webp&quality=lossless&width=478&height=438" property="og:image" />
+<meta content="#06402B" data-react-helmet="true" name="theme-color" />
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shkeffy's Video Lounge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .video-container {
+            margin: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .video-container iframe {
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            border-radius: 10px;
+        }
+        .video-title {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        .likes, .views {
+            margin: 5px;
+            font-size: 1.2em;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .video-list {
+            margin-top: 20px;
+        }
+        .video-list button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to Shkeffy's Video Lounge!</h1>
+
+    <div class="video-container" id="videoContainer">
+        <h2 class="video-title" id="videoTitle">Select a video to watch</h2>
+        <video id="videoPlayer" controls>
+            <source id="videoSource" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="likes" id="likeCount"></div>
+        <div class="views" id="viewCount"></div>
+        <button id="likeButton" onclick="likeVideo()">Like</button>
+    </div>
+
+    <div class="video-list">
+        <h3>Videos:</h3>
+        <button onclick="loadVideo('Playbutton flex', 'https://cdn.discordapp.com/attachments/1342366096992239677/1348014424484741263/vidu-video-2680833432313387.mp4?ex=67d13783&is=67cfe603&hm=2d5760894565d70f9ee59c3ece9723099c8cb261c051c83e579d2b99279361c8&')">Playbutton flex</button>
+        <button onclick="loadVideo('Freaky', 'https://cdn.discordapp.com/attachments/1301976649876766763/1346594405556944908/vidu-video-2675286444212341.mp4?ex=67d15304&is=67d00184&hm=d96c8939f1bce331e567315e22e25ff366ee9d09f9f397e04a2a803155a87e09&')">Freaky</button>
+        <button onclick="loadVideo('Crying', 'https://cdn.discordapp.com/attachments/1342366096992239677/1346596037808230430/vidu-video-2675288173052235.mp4?ex=67d15489&is=67d00309&hm=2cbca5add04bfa7c8a16e58875904ec6e9b26783dd99d48c0fdde67a9b825e2c&')">Crying</button>
+        <button onclick="loadVideo('Hi guys', 'https://cdn.discordapp.com/attachments/1342366096992239677/1345646185964109824/411ad35b-dc69-4c8e-9ede-68a2547cccf9.mp4?ex=67d12bab&is=67cfda2b&hm=66df94a7879da8db555e0244a7dd712088d96bdc17675f401e92c79498516299&')">Hi guys</button>
+        <button onclick="loadVideo('Romantical', 'https://cdn.discordapp.com/attachments/1301976649876766763/1346544362686779473/eb7eb340-cb14-49d2-99be-e7bf8a71ad97.mp4?ex=67d12469&is=67cfd2e9&hm=82c844b7c3fe1b17daddc8b071c6e578e697d416b1544e8e9b6756069137fe15&')">Romantical</button>
+    </div>
+
+    <script>
+        let currentLikes = 0;
+        let currentViews = Math.floor(Math.random() * 1000) + 100; // Random views between 100 and 1000
+
+        function loadVideo(title, videoUrl) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoTitle = document.getElementById('videoTitle');
+            const videoSource = document.getElementById('videoSource');
+            const likeCount = document.getElementById('likeCount');
+            const viewCount = document.getElementById('viewCount');
+            
+            videoTitle.textContent = title;
+            videoSource.src = videoUrl;
+            videoPlayer.load();
+            
+            // Random initial likes between 10 and 500
+            currentLikes = Math.floor(Math.random() * 490) + 10;
+            likeCount.textContent = `Likes: ${currentLikes}`;
+            viewCount.textContent = `Views: ${currentViews}`;
+        }
+
+        function likeVideo() {
+            currentLikes += 1;
+            const likeCount = document.getElementById('likeCount');
+            likeCount.textContent = `Likes: ${currentLikes}`;
+        }
+
+        // Set default video on load
+        window.onload = function() {
+            loadVideo('Playbutton flex', 'https://cdn.discordapp.com/attachments/1342366096992239677/1348014424484741263/vidu-video-2680833432313387.mp4?ex=67d13783&is=67cfe603&hm=2d5760894565d70f9ee59c3ece9723099c8cb261c051c83e579d2b99279361c8&');
+        }
+    </script>
+
+</body>
+</html>
