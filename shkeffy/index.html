@@ -49,6 +49,7 @@
             font-size: 1em;
             cursor: pointer;
             border-radius: 5px;
+            margin: 5px;
         }
         button:hover {
             background-color: #45a049;
@@ -59,23 +60,33 @@
         .video-list button {
             margin: 10px;
         }
-        /* Exclusive Button */
+        /* Rainbow animation for the exclusive button */
+        @keyframes rainbow {
+            0% { color: red; }
+            14% { color: orange; }
+            28% { color: yellow; }
+            42% { color: green; }
+            57% { color: blue; }
+            71% { color: indigo; }
+            85% { color: violet; }
+            100% { color: red; }
+        }
         .exclusive-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
             background-color: red;
             color: white;
-            font-size: 0.9em;
+            font-weight: bold;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            animation: rainbow 3s infinite linear;
         }
     </style>
 </head>
 <body>
 
     <h1>Welcome to Shkeffy's Video Lounge!</h1>
-
-    <!-- Exclusive Video Button -->
-    <button class="exclusive-btn" onclick="loadVideo('VECTOR', 'https://media.discordapp.net/attachments/1319370231608770672/1352777091342667787/8ff278ff-27ff-4f77-beef-638acf15ddcb_1.mp4?ex=67df3f57&is=67ddedd7&hm=5df1b15fb62d67a58da6d0de9c1f1db646cdbfc1084e256ba6081ea649a6dbf4&')">EXCLUSIVE VIDEO: VECTOR</button>
 
     <div class="video-container" id="videoContainer">
         <h2 class="video-title" id="videoTitle">Select a video to watch</h2>
@@ -90,13 +101,18 @@
 
     <div class="video-list">
         <h3>Videos:</h3>
-        <button onclick="loadVideo('Bald', 'https://media.discordapp.net/attachments/1319370231608770672/1352777106710462524/vidu-video-2699385748980325.mp4?ex=67df3f5b&is=67ddeddb&hm=e3705bac0781c90e61b09d77f94fb8726e6a4423234ddda2628bfd08e870f1a4&')">Bald</button>
-        <button onclick="loadVideo('Walk Away', 'https://media.discordapp.net/attachments/1319370231608770672/1352777154068353166/vidu-video-2699386742147787.mp4?ex=67df3f66&is=67ddede6&hm=66e0d535cb90df86d4031231b9146968b6f97829991274b9ebfb4a7f9c25bfab&')">Walk Away</button>
-        <button onclick="loadVideo('Vanish', 'https://media.discordapp.net/attachments/1319370231608770672/1352777168098164746/vidu-video-2699388055331219.mp4?ex=67df3f6a&is=67ddedea&hm=d8d538bf91f413dfdd79966837a550c6efea6f0ff76e3e12c6f8b516157da2ff&')">Vanish</button>
-        <button onclick="loadVideo('Locked In', 'https://media.discordapp.net/attachments/1319370231608770672/1352777186146259086/vidu-video-2699391496421471.mp4?ex=67df3f6e&is=67ddedee&hm=7150f6bfc3260fa77de7416182c6a5626681443dfae75aca799a3fbdf1bffb37&')">Locked In</button>
-        <button onclick="loadVideo('Donald Trump', 'https://media.discordapp.net/attachments/1319370231608770672/1352777198267924480/vidu-video-2699394555011443.mp4?ex=67df3f71&is=67ddedf1&hm=84bab890b1c08022469866d74298afaa9deae041647627906e87c4967a4c39c2&')">Donald Trump</button>
-        <button onclick="loadVideo('Explode', 'https://media.discordapp.net/attachments/1319370231608770672/1352777216206831719/vidu-video-2699385263928294.mp4?ex=67df3f75&is=67ddedf5&hm=dad921530d83abb7b8e297bd87840f1dadbfbe81989552ef3a1985c6b68211f9&')">Explode</button>
-        <button onclick="loadVideo('VECTOR (Costume)', 'https://media.discordapp.net/attachments/1319370231608770672/1352777267377602741/de6d3633-4ba8-41d6-977b-74c70952e3e4.mp4?ex=67df3f81&is=67ddee01&hm=e519e6bcb7d2c8c740b8015db6796fd369b3756c903e7e05166d04af3968e5a8&')">VECTOR (Costume)</button>
+        <button onclick="loadVideo('Bald', 'https://media.discordapp.net/attachments/1319370231608770672/1352777106710462524/vidu-video-2699385748980325.mp4')">Bald</button>
+        <button onclick="loadVideo('Walk Away', 'https://media.discordapp.net/attachments/1319370231608770672/1352777154068353166/vidu-video-2699386742147787.mp4')">Walk Away</button>
+        <button onclick="loadVideo('Vanish', 'https://media.discordapp.net/attachments/1319370231608770672/1352777168098164746/vidu-video-2699388055331219.mp4')">Vanish</button>
+        <button onclick="loadVideo('Locked In', 'https://media.discordapp.net/attachments/1319370231608770672/1352777186146259086/vidu-video-2699391496421471.mp4')">Locked In</button>
+        <button onclick="loadVideo('Donald Trump', 'https://media.discordapp.net/attachments/1319370231608770672/1352777198267924480/vidu-video-2699394555011443.mp4')">Donald Trump</button>
+        <button onclick="loadVideo('Explode', 'https://media.discordapp.net/attachments/1319370231608770672/1352777216206831719/vidu-video-2699385263928294.mp4')">Explode</button>
+        <button onclick="loadVideo('VECTOR (costume)', 'https://media.discordapp.net/attachments/1319370231608770672/1352777267377602741/de6d3633-4ba8-41d6-977b-74c70952e3e4.mp4')">VECTOR (costume)</button>
+        
+        <!-- Exclusive Video Button -->
+        <button class="exclusive-btn" onclick="loadVideo('VECTOR', 'https://media.discordapp.net/attachments/1319370231608770672/1352777091342667787/8ff278ff-27ff-4f77-beef-638acf15ddcb_1.mp4')">
+            EXCLUSIVE VIDEO: VECTOR
+        </button>
     </div>
 
     <script>
@@ -114,6 +130,7 @@
             videoSource.src = videoUrl;
             videoPlayer.load();
             
+            // Random initial likes between 10 and 500
             currentLikes = Math.floor(Math.random() * 490) + 10;
             likeCount.textContent = `Likes: ${currentLikes}`;
             viewCount.textContent = `Views: ${currentViews}`;
@@ -123,7 +140,12 @@
             currentLikes += 1;
             document.getElementById('likeCount').textContent = `Likes: ${currentLikes}`;
         }
+
+        // Set default video on load
+        window.onload = function() {
+            loadVideo('Bald', 'https://media.discordapp.net/attachments/1319370231608770672/1352777106710462524/vidu-video-2699385748980325.mp4');
+        }
     </script>
 
 </body>
-    </html>
+</html>
