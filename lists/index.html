@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdowns</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 1000px;
+      width: 100%;
+      padding: 20px;
+    }
+    .box {
+      background: #222;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .title {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #555;
+      padding-bottom: 10px;
+    }
+    .countdown {
+      font-size: 1.5em;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="countdown-grid"></div>  <script>
+    const releases = [
+      { title: "Elio", date: new Date("2025-06-13T00:00:00") },
+      { title: "Smurfs", date: new Date("2025-07-18T00:00:00") },
+      { title: "The Bad Guys 2", date: new Date("2025-08-01T00:00:00") },
+      { title: "Zootopia 2", date: new Date("2025-11-26T00:00:00") },
+      { title: "Five Nights At Freddy's 2", date: new Date("2025-12-01T00:00:00") },
+      { title: "Squid Game 3", date: new Date("2025-06-27T00:00:00") },
+    ];
+
+    function updateCountdowns() {
+      const now = new Date();
+      document.getElementById("countdown-grid").innerHTML = "";
+
+      releases.forEach(release => {
+        const distance = release.date - now;
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((distance / (1000 * 60)) % 60);
+        const seconds = Math.floor((distance / 1000) % 60);
+
+        const box = document.createElement("div");
+        box.className = "box";
+
+        const title = document.createElement("div");
+        title.className = "title";
+        title.textContent = release.title;
+
+        const countdown = document.createElement("div");
+        countdown.className = "countdown";
+        countdown.textContent = `${days}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        box.appendChild(title);
+        box.appendChild(countdown);
+        document.getElementById("countdown-grid").appendChild(box);
+      });
+    }
+
+    setInterval(updateCountdowns, 1000);
+    updateCountdowns();
+  </script></body>
+</html>
