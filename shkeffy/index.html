@@ -81,6 +81,16 @@
             cursor: pointer;
             animation: rainbow 3s infinite linear;
         }
+        .red-btn {
+            background-color: red;
+            color: red;
+            font-weight: bold;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -101,26 +111,34 @@
     <div class="video-list">
         <h3>Videos:</h3>
         <!-- Re-added original first videos -->
-        <button onclick="loadVideo('Playbutton flex', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Playbutton flex</button>
-        <button onclick="loadVideo('Freaky', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Freaky</button>
-        <button onclick="loadVideo('Crying', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Crying</button>
-        <button onclick="loadVideo('Hi guys', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Hi guys</button>
-        <button onclick="loadVideo('Romantical', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Romantical</button>
+        <button onclick="loadVideo('Playbutton flex', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Playbutton.mp4')">Playbutton flex</button>
+        <button onclick="loadVideo('Freaky', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Freaky.mp4')">Freaky</button>
+        <button onclick="loadVideo('Crying', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Cry.mp4')">Crying</button>
+        <button onclick="loadVideo('Hi guys', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Hi%20guys.mp4')">Hi guys</button>
+        <button onclick="loadVideo('Romantical', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Romantical.mp4')">Romantical</button>
 
         <!-- New videos -->
-        <button onclick="loadVideo('Bald', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Bald</button>
-        <button onclick="loadVideo('Walk Away', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Walk Away</button>
-        <button onclick="loadVideo('Vanish', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Vanish</button>
-        <button onclick="loadVideo('Locked In', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Locked In</button>
-        <button onclick="loadVideo('Donald Trump', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Donald Trump</button>
-        <button onclick="loadVideo('Explode', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">Explode</button>
-        <button onclick="loadVideo('VECTOR (costume)', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">VECTOR (costume)</button>
+        <button onclick="loadVideo('Bald', '')">Bald</button>
+        <button onclick="loadVideo('Walk Away', '')">Walk Away</button>
+        <button onclick="loadVideo('Vanish', '')">Vanish</button>
+        <button onclick="loadVideo('Locked In', '')">Locked In</button>
+        <button onclick="loadVideo('AURA', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Aura.mp4')">Aura</button>
+        <button onclick="loadVideo('Donald Trump', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Donald%20Trump%202.mp4')">Donald Trump 2</button>
+        <button onclick="loadVideo('Explode', '')">Explode</button>
+        <button onclick="loadVideo('VECTOR (costume)', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Vector%20(Costume).mp4')">VECTOR (costume)</button>
 
         <!-- Exclusive Video Button -->
-        <button class="exclusive-btn" onclick="loadVideo('VECTOR', 'https://ik.imagekit.io/c9laxlami/New Folder/Cry.mp4')">
+        <button class="exclusive-btn" onclick="loadVideo('VECTOR', 'https://ik.imagekit.io/c9laxlami/New%20Folder/8ff278ff-27ff-4f77-beef-638acf15ddcb%20(1).mp4')">
             EXCLUSIVE VIDEO: VECTOR
         </button>
     </div>
+
+        <!-- Exclusive Video Button -->
+        <button class="red-btn" onclick="loadVideo('Donald Trump', 'https://ik.imagekit.io/c9laxlami/New%20Folder/Donald%20Trump.mp4')">
+            Donald Trump
+        </button>
+    </div>
+
 
     <script>
         let currentLikes = 0;
@@ -147,7 +165,7 @@
 
         // Set default video on load
         window.onload = function() {
-            loadVideo('Playbutton flex', 'https://cdn.discordapp.com/attachments/1342366096992239677/1348014424484741263/vidu-video-2680833432313387.mp4');
+            loadVideo(' ', 'https://ik.imagekit.io/c9laxlami/New%20Folder/b6958238-7f98-4c37-b2b4-57e5667686111.mp4');
         }
     </script>
 
